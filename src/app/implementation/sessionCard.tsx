@@ -16,14 +16,14 @@ import {
   Backdrop,
 } from '@mui/material';
 import {
-  Delete as DeleteIcon,
-  Flag as FlagIcon,
-  Description as LogsIcon,
-  Schedule as ExtendIcon,
+  DeleteOutlined as DeleteIcon,
+  FlagOutlined as FlagIcon,
+  DescriptionOutlined as LogsIcon,
+  ScheduleOutlined as ExtendIcon,
   Code as CodeIcon,
 } from '@mui/icons-material';
 import { SessionCardProps, SessionType, SessionStatus } from '@/app/types/SessionCardProps';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { alpha, type Theme } from '@mui/material/styles';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -201,11 +201,68 @@ const stripMemoryUnit = (value: string | undefined): string => {
   return value.replace(/[KMGT]B?$/, '');
 };
 
-/** Format ISO timestamp as "YYYY-MM-DD HH:mm" in UTC. */
-const formatTimestamp = (timestamp: string): string => {
-  if (!timestamp) return 'Pending...';
-  const d = dayjs.utc(timestamp);
-  return d.isValid() ? d.format('YYYY-MM-DD HH:mm') : 'Pending...';
+/** Parse Skaha session timestamps as UTC instants (ISO `Z` or naive UTC). */
+const parseSessionUtc = (raw: string): dayjs.Dayjs | null => {
+  const s = raw?.trim();
+  if (!s) return null;
+  const d = /[zZ]$|[+-]\d{2}:?\d{2}$/.test(s) ? dayjs(s) : dayjs.utc(s);
+  return d.isValid() ? d : null;
+};
+
+const formatSessionDateLocal = (raw: string): string => {
+  const instant = parseSessionUtc(raw);
+  if (!instant) return '';
+  return new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZoneName: 'short',
+  }).format(instant.toDate());
+};
+
+const relativeTimeFormatter = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+
+function formatRelativeToNow(instant: dayjs.Dayjs, nowMs: number): string {
+  const diffSec = Math.round((instant.valueOf() - nowMs) / 1000);
+  const abs = Math.abs(diffSec);
+  let value: number;
+  let unit: Intl.RelativeTimeFormatUnit;
+  if (abs < 60) {
+    value = diffSec === 0 ? 0 : diffSec;
+    unit = 'second';
+  } else if (abs < 3600) {
+    value = Math.round(diffSec / 60);
+    unit = 'minute';
+  } else if (abs < 86400) {
+    value = Math.round(diffSec / 3600);
+    unit = 'hour';
+  } else if (abs < 86400 * 30) {
+    value = Math.round(diffSec / 86400);
+    unit = 'day';
+  } else if (abs < 86400 * 365) {
+    value = Math.round(diffSec / (86400 * 30));
+    unit = 'month';
+  } else {
+    value = Math.round(diffSec / (86400 * 365));
+    unit = 'year';
+  }
+  return relativeTimeFormatter.format(value, unit);
+}
+
+const formatStartedRelative = (raw: string, nowMs: number): string => {
+  const instant = parseSessionUtc(raw);
+  if (!instant) return 'Pending...';
+  return `Started ${formatRelativeToNow(instant, nowMs)}`;
+};
+
+const formatExpiresRelative = (raw: string, nowMs: number): string => {
+  const instant = parseSessionUtc(raw);
+  if (!instant) return 'Pending...';
+  const relative = formatRelativeToNow(instant, nowMs);
+  return instant.valueOf() > nowMs ? `Expires ${relative}` : `Expired ${relative}`;
 };
 
 // --- Hoisted styles (static, or theme-derived via sx callbacks) ---
@@ -276,6 +333,12 @@ export const SessionCardImpl = React.forwardRef<HTMLDivElement, SessionCardProps
     const { basePath } = usePublicRuntimeConfig();
     const theme = useTheme();
     const { openSessionModal } = useSessionModalsActions();
+    const [nowMs, setNowMs] = useState(() => Date.now());
+
+    useEffect(() => {
+      const intervalId = window.setInterval(() => setNowMs(Date.now()), 60_000);
+      return () => window.clearInterval(intervalId);
+    }, []);
 
     const openModal = (kind: 'events' | 'logs' | 'extend' | 'delete') => {
       if (!hasAssignedSessionId(id)) return;
@@ -500,18 +563,31 @@ export const SessionCardImpl = React.forwardRef<HTMLDivElement, SessionCardProps
                   </>
                 )}
               </Typography>
-              <Typography variant="body2" color="text.secondary" noWrap>
-                <Box component="span" sx={detailLabelSx}>
-                  Started:{' '}
-                </Box>
-                {formatTimestamp(startedTime)} UTC
-              </Typography>
-              <Typography variant="body2" color="text.secondary" noWrap>
-                <Box component="span" sx={detailLabelSx}>
-                  Expires:{' '}
-                </Box>
-                {formatTimestamp(expiresTime)} UTC
-              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  justifyContent: 'space-between',
+                  gap: 1,
+                  minWidth: 0,
+                }}
+              >
+                <Tooltip title={formatSessionDateLocal(startedTime) || 'Unknown'}>
+                  <Typography variant="body2" color="text.secondary" noWrap sx={{ minWidth: 0 }}>
+                    {formatStartedRelative(startedTime, nowMs)}
+                  </Typography>
+                </Tooltip>
+                <Tooltip title={formatSessionDateLocal(expiresTime) || 'Unknown'}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    noWrap
+                    sx={{ flexShrink: 0, textAlign: 'right' }}
+                  >
+                    {formatExpiresRelative(expiresTime, nowMs)}
+                  </Typography>
+                </Tooltip>
+              </Box>
             </Stack>
           </CardContent>
 
