@@ -22,6 +22,7 @@ declare module '@mui/material/styles' {
       sm: string;
       md: string;
       lg: string;
+      xl: string;
     };
     customTypography: {
       fontSize: {
@@ -36,6 +37,7 @@ declare module '@mui/material/styles' {
       sm: string;
       md: string;
       lg: string;
+      xl: string;
     };
     customTypography?: {
       fontSize: {
@@ -67,8 +69,33 @@ declare module '@mui/material/styles' {
 
 export type ThemeMode = 'light' | 'dark';
 
+const REDUCED_MOTION = '@media (prefers-reduced-motion: reduce)';
+const REDUCED_TRANSPARENCY = '@media (prefers-reduced-transparency: reduce)';
+
+const pressable = {
+  transition: `transform ${tokens.transitions.press.duration} ${tokens.transitions.easing.easeOut}, background-color ${tokens.transitions.duration.normalCSS} ${tokens.transitions.easing.emphasized}, border-color ${tokens.transitions.duration.normalCSS} ${tokens.transitions.easing.emphasized}, box-shadow ${tokens.transitions.duration.normalCSS} ${tokens.transitions.easing.emphasized}, color ${tokens.transitions.duration.normalCSS} ${tokens.transitions.easing.emphasized}`,
+  '&:active:not(.Mui-disabled)': {
+    transform: `scale(${tokens.transitions.press.scale})`,
+  },
+  [REDUCED_MOTION]: {
+    transition: `background-color ${tokens.transitions.duration.normalCSS} ease, border-color ${tokens.transitions.duration.normalCSS} ease, color ${tokens.transitions.duration.normalCSS} ease`,
+    '&:active:not(.Mui-disabled)': {
+      transform: 'none',
+    },
+  },
+};
+
 export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
   const isDark = mode === 'dark';
+  // UVic websites blue #005493
+  const primaryHoverFill = isDark ? 'rgba(0, 84, 147, 0.24)' : 'rgba(0, 84, 147, 0.12)';
+  const glassFill = isDark ? tokens.colors.surface.glass.dark : tokens.colors.surface.glass.light;
+  const glassSolid = isDark
+    ? tokens.colors.surface.glass.darkSolid
+    : tokens.colors.surface.glass.lightSolid;
+  const hairline = isDark
+    ? tokens.colors.surface.hairline.dark
+    : tokens.colors.surface.hairline.light;
 
   const themeOptions: ThemeOptions = {
     palette: {
@@ -109,7 +136,7 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
         main: tokens.colors.tertiary[500],
         light: tokens.colors.tertiary[300],
         dark: tokens.colors.tertiary[700],
-        contrastText: tokens.colors.text.onPrimary, // Using white text for tertiary (purple)
+        contrastText: tokens.colors.text.onAccent, // Navy on UVic sky blue
         50: tokens.colors.tertiary[50],
         100: tokens.colors.tertiary[100],
         200: tokens.colors.tertiary[200],
@@ -187,7 +214,7 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
       },
       success: {
         main: tokens.colors.semantic.success[500],
-        light: tokens.colors.semantic.success[300],
+        light: tokens.colors.semantic.success[400],
         dark: tokens.colors.semantic.success[700],
         contrastText: tokens.colors.text.onSuccess,
         50: tokens.colors.semantic.success[50],
@@ -237,7 +264,7 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
         selected: isDark ? tokens.colors.neutral[700] : tokens.colors.neutral[200],
         disabled: isDark ? tokens.colors.neutral[600] : tokens.colors.neutral[400],
         disabledBackground: isDark ? tokens.colors.neutral[800] : tokens.colors.neutral[200],
-        focus: tokens.colors.border.focus,
+        focus: primaryHoverFill,
       },
     },
     typography: {
@@ -250,38 +277,38 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
       h1: {
         fontSize: tokens.typography.fontSize['5xl'],
         fontWeight: tokens.typography.fontWeight.bold,
-        lineHeight: tokens.typography.lineHeight.tight,
-        letterSpacing: tokens.typography.letterSpacing.tighter,
+        lineHeight: 1.1,
+        letterSpacing: tokens.typography.letterSpacing.tight,
       },
       h2: {
         fontSize: tokens.typography.fontSize['4xl'],
         fontWeight: tokens.typography.fontWeight.bold,
-        lineHeight: tokens.typography.lineHeight.tight,
+        lineHeight: 1.12,
         letterSpacing: tokens.typography.letterSpacing.tight,
       },
       h3: {
         fontSize: tokens.typography.fontSize['3xl'],
         fontWeight: tokens.typography.fontWeight.semibold,
-        lineHeight: tokens.typography.lineHeight.snug,
+        lineHeight: 1.2,
         letterSpacing: tokens.typography.letterSpacing.tight,
       },
       h4: {
         fontSize: tokens.typography.fontSize['2xl'],
         fontWeight: tokens.typography.fontWeight.semibold,
-        lineHeight: tokens.typography.lineHeight.snug,
-        letterSpacing: tokens.typography.letterSpacing.normal,
+        lineHeight: 1.25,
+        letterSpacing: tokens.typography.letterSpacing.tight,
       },
       h5: {
         fontSize: tokens.typography.fontSize.xl,
-        fontWeight: tokens.typography.fontWeight.medium,
-        lineHeight: tokens.typography.lineHeight.normal,
-        letterSpacing: tokens.typography.letterSpacing.normal,
+        fontWeight: tokens.typography.fontWeight.semibold,
+        lineHeight: tokens.typography.lineHeight.snug,
+        letterSpacing: tokens.typography.letterSpacing.tight,
       },
       h6: {
         fontSize: tokens.typography.fontSize.lg,
-        fontWeight: tokens.typography.fontWeight.medium,
-        lineHeight: tokens.typography.lineHeight.normal,
-        letterSpacing: tokens.typography.letterSpacing.normal,
+        fontWeight: tokens.typography.fontWeight.semibold,
+        lineHeight: tokens.typography.lineHeight.snug,
+        letterSpacing: tokens.typography.letterSpacing.tight,
       },
       subtitle1: {
         fontSize: tokens.typography.fontSize.base,
@@ -309,15 +336,15 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
       },
       button: {
         fontSize: tokens.typography.fontSize.sm,
-        fontWeight: tokens.typography.fontWeight.medium,
+        fontWeight: tokens.typography.fontWeight.semibold,
         textTransform: 'none',
-        letterSpacing: tokens.typography.letterSpacing.wide,
+        letterSpacing: tokens.typography.letterSpacing.normal,
       },
       caption: {
         fontSize: tokens.typography.fontSize.xs,
         fontWeight: tokens.typography.fontWeight.regular,
         lineHeight: tokens.typography.lineHeight.normal,
-        letterSpacing: tokens.typography.letterSpacing.wide,
+        letterSpacing: tokens.typography.letterSpacing.normal,
       },
       overline: {
         fontSize: tokens.typography.fontSize.xs,
@@ -333,6 +360,7 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
       sm: `${tokens.borderRadius.sm}px`,
       md: `${tokens.borderRadius.md}px`,
       lg: `${tokens.borderRadius.lg}px`,
+      xl: `${tokens.borderRadius.xl}px`,
     },
     customTypography: {
       fontSize: {
@@ -411,40 +439,46 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
             boxSizing: 'border-box',
           },
           html: {
+            colorScheme: isDark ? 'dark' : 'light',
             scrollBehavior: 'smooth',
+            [REDUCED_MOTION]: {
+              scrollBehavior: 'auto',
+            },
           },
           body: {
             fontFamily: tokens.typography.fontFamily.primary,
             fontSize: tokens.typography.fontSize.base,
             lineHeight: tokens.typography.lineHeight.normal,
+            fontOpticalSizing: 'auto',
+            WebkitFontSmoothing: 'antialiased',
+            MozOsxFontSmoothing: 'grayscale',
             color: isDark ? tokens.colors.text.primary.dark : tokens.colors.text.primary.light,
             backgroundColor: isDark
               ? tokens.colors.surface.backgroundDark.default
               : tokens.colors.surface.background.default,
-            // Keep theme transition for smooth dark/light mode switching
-            transition: `background-color ${tokens.transitions.duration.fast} ${tokens.transitions.easing.standard}, color ${tokens.transitions.duration.fast} ${tokens.transitions.easing.standard}`,
+            transition: `background-color ${tokens.transitions.duration.slowerCSS} ${tokens.transitions.easing.emphasized}, color ${tokens.transitions.duration.slowerCSS} ${tokens.transitions.easing.emphasized}`,
+            [REDUCED_MOTION]: {
+              transition: 'none',
+            },
           },
         },
       },
       MuiButton: {
         styleOverrides: {
           root: {
+            ...pressable,
             borderRadius: tokens.borderRadius.md,
             padding: `${tokens.spacing[2]} ${tokens.spacing[4]}`,
-            fontWeight: tokens.typography.fontWeight.medium,
+            fontWeight: tokens.typography.fontWeight.semibold,
             textTransform: 'none',
             boxShadow: 'none',
             minHeight: '40px',
-            transition: 'none',
-            '&:hover': {
-              // Minimal hover - just background color change
-            },
-            '&:active': {
-              // No transform
-            },
             '&:focus-visible': {
               outline: `2px solid ${tokens.colors.border.focus}`,
               outlineOffset: '2px',
+            },
+            '&.Mui-disabled': {
+              transform: 'none',
             },
           },
           sizeLarge: {
@@ -457,11 +491,18 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
             fontSize: tokens.typography.fontSize.sm,
             minHeight: '32px',
           },
+          contained: {
+            boxShadow: 'none',
+            '&:hover': {
+              boxShadow: 'none',
+            },
+          },
           containedPrimary: {
             backgroundColor: tokens.colors.primary[500],
             color: tokens.colors.text.onPrimary,
             '&:hover': {
               backgroundColor: tokens.colors.primary[600],
+              boxShadow: 'none',
             },
             '&:active': {
               backgroundColor: tokens.colors.primary[700],
@@ -472,13 +513,13 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
             color: tokens.colors.primary[500],
             '&:hover': {
               borderColor: tokens.colors.primary[600],
-              backgroundColor: tokens.colors.primary[50],
+              backgroundColor: isDark ? primaryHoverFill : tokens.colors.primary[50],
             },
           },
           textPrimary: {
             color: tokens.colors.primary[500],
             '&:hover': {
-              backgroundColor: tokens.colors.primary[50],
+              backgroundColor: isDark ? primaryHoverFill : tokens.colors.primary[50],
             },
           },
         },
@@ -486,35 +527,74 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
       MuiAppBar: {
         styleOverrides: {
           root: {
+            color: 'inherit',
+            backgroundColor: glassFill,
+            backgroundImage: 'none',
             boxShadow: 'none',
-            borderBottom: `1px solid ${isDark ? tokens.colors.neutral[700] : tokens.colors.neutral[200]}`,
-            transition: 'none',
+            borderBottom: 'none',
+            backdropFilter: tokens.materials.blur.chrome,
+            WebkitBackdropFilter: tokens.materials.blur.chrome,
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: '1px',
+              pointerEvents: 'none',
+              background: hairline,
+            },
+            [REDUCED_TRANSPARENCY]: {
+              backgroundColor: glassSolid,
+              backdropFilter: 'none',
+              WebkitBackdropFilter: 'none',
+            },
           },
         },
       },
       MuiDrawer: {
         styleOverrides: {
           paper: {
-            borderRight: `1px solid ${isDark ? tokens.colors.neutral[700] : tokens.colors.neutral[200]}`,
-            backgroundColor: isDark
-              ? tokens.colors.surface.backgroundDark.paper
-              : tokens.colors.surface.background.paper,
-            transition: 'none',
+            borderRight: `1px solid ${hairline}`,
+            backgroundColor: glassFill,
+            backdropFilter: tokens.materials.blur.chrome,
+            WebkitBackdropFilter: tokens.materials.blur.chrome,
+            boxShadow: isDark
+              ? '0 8px 28px rgba(0, 0, 0, 0.45)'
+              : '0 8px 28px rgba(0, 0, 0, 0.12)',
+            [REDUCED_TRANSPARENCY]: {
+              backgroundColor: glassSolid,
+              backdropFilter: 'none',
+              WebkitBackdropFilter: 'none',
+            },
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundImage: 'none',
+          },
+          rounded: {
+            borderRadius: tokens.borderRadius.xl,
+          },
+          outlined: {
+            borderColor: hairline,
           },
         },
       },
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: tokens.borderRadius.lg,
+            borderRadius: tokens.borderRadius.xl,
             boxShadow: 'none',
-            border: `1px solid ${isDark ? tokens.colors.neutral[700] : tokens.colors.neutral[200]}`,
+            border: `1px solid ${hairline}`,
             backgroundColor: isDark
               ? tokens.colors.surface.backgroundDark.paper
               : tokens.colors.surface.background.paper,
-            transition: 'none',
-            '&:hover': {
-              // No hover effects by default
+            transition: `transform ${tokens.transitions.press.duration} ${tokens.transitions.easing.easeOut}, border-color ${tokens.transitions.duration.normalCSS} ${tokens.transitions.easing.emphasized}, box-shadow ${tokens.transitions.duration.normalCSS} ${tokens.transitions.easing.emphasized}`,
+            [REDUCED_MOTION]: {
+              transition: 'none',
             },
           },
         },
@@ -522,8 +602,8 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
       MuiIconButton: {
         styleOverrides: {
           root: {
+            ...pressable,
             borderRadius: tokens.borderRadius.md,
-            transition: 'none',
             '&:hover': {
               backgroundColor: isDark ? tokens.colors.neutral[700] : tokens.colors.neutral[100],
             },
@@ -538,10 +618,38 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
         styleOverrides: {
           paper: {
             borderRadius: tokens.borderRadius.lg,
-            boxShadow: tokens.shadows.elevation[8],
-            border: `1px solid ${isDark ? tokens.colors.neutral[700] : tokens.colors.neutral[200]}`,
+            boxShadow: isDark
+              ? '0 8px 28px rgba(0, 0, 0, 0.45)'
+              : '0 8px 28px rgba(0, 0, 0, 0.12)',
+            border: `1px solid ${hairline}`,
             marginTop: tokens.spacing[1],
             minWidth: '200px',
+            backgroundColor: glassFill,
+            backdropFilter: tokens.materials.blur.chrome,
+            WebkitBackdropFilter: tokens.materials.blur.chrome,
+            backgroundImage: 'none',
+            [REDUCED_TRANSPARENCY]: {
+              backgroundColor: glassSolid,
+              backdropFilter: 'none',
+              WebkitBackdropFilter: 'none',
+            },
+          },
+        },
+      },
+      MuiPopover: {
+        styleOverrides: {
+          paper: {
+            borderRadius: tokens.borderRadius.lg,
+            border: `1px solid ${hairline}`,
+            backgroundColor: glassFill,
+            backdropFilter: tokens.materials.blur.chrome,
+            WebkitBackdropFilter: tokens.materials.blur.chrome,
+            backgroundImage: 'none',
+            [REDUCED_TRANSPARENCY]: {
+              backgroundColor: glassSolid,
+              backdropFilter: 'none',
+              WebkitBackdropFilter: 'none',
+            },
           },
         },
       },
@@ -551,12 +659,7 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
             borderRadius: tokens.borderRadius.sm,
             margin: `${tokens.spacing[1]} ${tokens.spacing[2]}`,
             padding: `${tokens.spacing[2]} ${tokens.spacing[3]}`,
-            transition: 'none',
-            // Hover: subtle primary tint in light mode (was a near-invisible
-            // neutral grey against the white surface, especially next to the
-            // selected item's blue tint). Dark mode keeps the neutral hover —
-            // it reads fine there. Selected-item hover follows the same
-            // pattern, slightly stronger so the selected state still wins.
+            transition: `background-color ${tokens.transitions.duration.fastCSS} ${tokens.transitions.easing.emphasized}`,
             '&:hover': {
               backgroundColor: isDark
                 ? tokens.colors.neutral[700]
@@ -572,9 +675,15 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
                 ? tokens.colors.neutral[700]
                 : tokens.colors.primary[200],
             },
-            '&:focus-visible': {
-              outline: `2px solid ${tokens.colors.border.focus}`,
+            '&:focus-visible, &.Mui-focusVisible': {
+              backgroundColor: isDark
+                ? tokens.colors.neutral[700]
+                : tokens.colors.primary[100],
+              outline: `2px solid ${tokens.colors.primary[500]}`,
               outlineOffset: '2px',
+            },
+            [REDUCED_MOTION]: {
+              transition: 'none',
             },
           },
         },
@@ -586,16 +695,84 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
           },
         },
       },
+      MuiBackdrop: {
+        styleOverrides: {
+          root: {
+            backgroundColor: isDark
+              ? tokens.colors.surface.overlay.darker
+              : tokens.colors.surface.overlay.dark,
+            // Never blur the page through a modal/menu scrim. Menu uses an
+            // invisible full-viewport backdrop; filter here turns the whole
+            // UI to mush while a select is open.
+            backdropFilter: 'none',
+            WebkitBackdropFilter: 'none',
+          },
+          invisible: {
+            backgroundColor: 'transparent',
+            backdropFilter: 'none',
+            WebkitBackdropFilter: 'none',
+          },
+        },
+      },
       MuiDialog: {
         styleOverrides: {
           paper: {
-            borderRadius: tokens.borderRadius.lg,
-            // Make dialogs responsive
+            borderRadius: tokens.borderRadius['2xl'],
+            backgroundImage: 'none',
+            boxShadow: isDark
+              ? '0 24px 80px rgba(0, 0, 0, 0.55)'
+              : '0 24px 80px rgba(0, 0, 0, 0.18)',
+            overflow: 'hidden',
             '@media (max-width: 600px)': {
               margin: tokens.spacing[2],
               width: `calc(100% - ${tokens.spacing[4]})`,
               maxWidth: '100%',
+              borderRadius: tokens.borderRadius.xl,
             },
+          },
+          paperFullScreen: {
+            borderRadius: 0,
+            margin: 0,
+            width: '100%',
+            maxWidth: '100%',
+          },
+        },
+      },
+      MuiDialogTitle: {
+        styleOverrides: {
+          root: {
+            fontSize: tokens.typography.fontSize['2xl'],
+            fontWeight: tokens.typography.fontWeight.semibold,
+            letterSpacing: tokens.typography.letterSpacing.tight,
+            lineHeight: 1.2,
+            padding: `${tokens.spacing[5]} ${tokens.spacing[6]} ${tokens.spacing[3]}`,
+          },
+        },
+      },
+      MuiDialogContent: {
+        styleOverrides: {
+          root: {
+            padding: `${tokens.spacing[3]} ${tokens.spacing[6]} ${tokens.spacing[4]}`,
+          },
+        },
+      },
+      MuiDialogActions: {
+        styleOverrides: {
+          root: {
+            padding: `${tokens.spacing[2]} ${tokens.spacing[6]} ${tokens.spacing[5]}`,
+            gap: tokens.spacing[2],
+          },
+        },
+      },
+      MuiTooltip: {
+        styleOverrides: {
+          tooltip: {
+            borderRadius: tokens.borderRadius.sm,
+            fontSize: tokens.typography.fontSize.xs,
+            fontWeight: tokens.typography.fontWeight.medium,
+            letterSpacing: tokens.typography.letterSpacing.normal,
+            padding: `${tokens.spacing[1]} ${tokens.spacing[2]}`,
+            backgroundColor: isDark ? 'rgba(44, 44, 46, 0.94)' : 'rgba(50, 50, 52, 0.94)',
           },
         },
       },
@@ -604,13 +781,16 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
           root: {
             '& .MuiOutlinedInput-root': {
               borderRadius: tokens.borderRadius.md,
-              transition: 'none',
+              transition: `background-color ${tokens.transitions.duration.normalCSS} ${tokens.transitions.easing.emphasized}`,
               '&:hover .MuiOutlinedInput-notchedOutline': {
                 borderColor: isDark ? tokens.colors.neutral[500] : tokens.colors.neutral[400],
               },
               '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                 borderColor: tokens.colors.border.focus,
                 borderWidth: '2px',
+              },
+              [REDUCED_MOTION]: {
+                transition: 'none',
               },
             },
           },
@@ -656,15 +836,27 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
         styleOverrides: {
           root: {
             borderRadius: tokens.borderRadius.full,
-            fontWeight: tokens.typography.fontWeight.medium,
+            fontWeight: tokens.typography.fontWeight.semibold,
             fontSize: tokens.typography.fontSize.sm,
+            letterSpacing: tokens.typography.letterSpacing.normal,
+          },
+        },
+      },
+      MuiLinearProgress: {
+        styleOverrides: {
+          root: {
+            borderRadius: tokens.borderRadius.full,
+            overflow: 'hidden',
+          },
+          bar: {
+            borderRadius: tokens.borderRadius.full,
           },
         },
       },
       MuiTabs: {
         styleOverrides: {
           root: {
-            borderBottom: `1px solid ${isDark ? tokens.colors.neutral[700] : tokens.colors.neutral[200]}`,
+            borderBottom: `1px solid ${hairline}`,
           },
           indicator: {
             backgroundColor: tokens.colors.primary[500],
@@ -680,9 +872,9 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
             textTransform: 'none',
             fontWeight: tokens.typography.fontWeight.medium,
             fontSize: tokens.typography.fontSize.sm,
-            minHeight: '48px', // Touch-friendly height
+            minHeight: '48px',
             padding: `${tokens.spacing[2]} ${tokens.spacing[4]}`,
-            transition: 'none',
+            transition: `color ${tokens.transitions.duration.fastCSS} ${tokens.transitions.easing.emphasized}, background-color ${tokens.transitions.duration.fastCSS} ${tokens.transitions.easing.emphasized}`,
             '&:hover': {
               color: tokens.colors.primary[500],
               backgroundColor: isDark ? tokens.colors.neutral[800] : tokens.colors.neutral[50],

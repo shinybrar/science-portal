@@ -9,6 +9,7 @@ import { QueryProvider } from '@/lib/providers/QueryProvider';
 import { NuqsProvider } from '@/lib/providers/NuqsProvider';
 import { PublicRuntimeConfigProvider } from '@/lib/providers/PublicRuntimeConfigProvider';
 import { getPublicRuntimeConfigFromEnv } from '@/lib/config/public-runtime-config';
+import { fontMono, fontSans, fontSerif } from '@/app/fonts';
 import './globals.css';
 
 /** Re-read deployment env on every request so container runtime vars reach the client. */
@@ -27,7 +28,10 @@ export default function RootLayout({
   const publicRuntimeConfig = getPublicRuntimeConfigFromEnv();
 
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable}`}
+    >
       <body>
         <AppRouterCacheProvider>
           <PublicRuntimeConfigProvider value={publicRuntimeConfig}>

@@ -52,13 +52,6 @@ export const ThemeToggleImpl: React.FC<ThemeToggleProps> = React.memo(
               onClick={toggleTheme}
               size={sizeMap[size]}
               aria-label={tooltip}
-              sx={{
-                borderRadius: 1,
-                transition: 'all 0.2s ease-in-out',
-                '&:hover': {
-                  transform: 'scale(1.05)',
-                },
-              }}
             >
               <Icon sx={{ fontSize: iconSize[size] }} />
             </IconButton>
@@ -83,13 +76,6 @@ export const ThemeToggleImpl: React.FC<ThemeToggleProps> = React.memo(
           onClick={toggleTheme}
           size={sizeMap[size]}
           aria-label={tooltip}
-          sx={{
-            borderRadius: 1,
-            transition: 'all 0.2s ease-in-out',
-            '&:hover': {
-              transform: 'scale(1.05)',
-            },
-          }}
         >
           <Icon sx={{ fontSize: iconSize[size] }} />
         </IconButton>

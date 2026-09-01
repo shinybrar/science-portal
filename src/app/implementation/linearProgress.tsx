@@ -26,10 +26,9 @@ export const LinearProgressImpl: React.FC<LinearProgressProps> = (props) => {
       valueBuffer={valueBuffer}
       sx={{
         height: 4,
-        borderRadius: 2,
-        backgroundColor: (theme) => theme.palette.grey[200],
+        borderRadius: '9999px',
         '& .MuiLinearProgress-bar': {
-          borderRadius: 2,
+          borderRadius: '9999px',
         },
         ...sx,
       }}

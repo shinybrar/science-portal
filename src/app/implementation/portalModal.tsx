@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { Close as CloseIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import type { PortalModalProps } from '@/app/types/PortalModalProps';
+import { tokens } from '@/app/design-system/tokens';
 
 /**
  * Unified modal shell for portal dialogs.
@@ -116,21 +117,35 @@ export const PortalModalImpl = React.forwardRef<HTMLDivElement, PortalModalProps
         </DialogTitle>
 
         {/* Status bar — always visible like DashboardWidget; busy = primary indeterminate. */}
-        {showProgressBar && (
-          <Box sx={{ flexShrink: 0, px: 2, mb: 2 }}>
-            <LinearProgress
-              color={isBusy ? 'primary' : 'success'}
-              variant={isBusy ? 'indeterminate' : 'determinate'}
-              value={isBusy ? undefined : progressValue}
+        {showProgressBar &&
+          (isBusy ? (
+            <Box sx={{ flexShrink: 0, px: 3, mb: 1.5 }}>
+              <LinearProgress
+                color="primary"
+                variant="indeterminate"
+                sx={{
+                  width: '100%',
+                  height: 3,
+                  borderRadius: 2,
+                  '& .MuiLinearProgress-bar': { borderRadius: 2 },
+                }}
+              />
+            </Box>
+          ) : (
+            <Box
+              aria-hidden
               sx={{
-                width: '100%',
-                height: 4,
-                borderRadius: 2,
-                '& .MuiLinearProgress-bar': { borderRadius: 2 },
+                flexShrink: 0,
+                mx: 3,
+                mb: 1.5,
+                height: '1px',
+                backgroundColor: (theme) =>
+                  theme.palette.mode === 'dark'
+                    ? tokens.colors.surface.hairline.dark
+                    : tokens.colors.surface.hairline.light,
               }}
             />
-          </Box>
-        )}
+          ))}
 
         <DialogContent sx={{ pt: 2 }}>
           {alert}

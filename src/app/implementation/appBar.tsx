@@ -26,6 +26,7 @@ import { IconButton } from '@/app/components/IconButton/IconButton';
 import { List } from '@/app/components/List/List';
 import { ListItem } from '@/app/components/List/ListItem';
 import { useMobileDrawerOpen, useNavigationActions } from '@/lib/stores';
+import { tokens } from '@/app/design-system/tokens';
 
 export const AppBarImpl = React.forwardRef<HTMLDivElement, AppBarProps>(
   (
@@ -127,19 +128,50 @@ export const AppBarImpl = React.forwardRef<HTMLDivElement, AppBarProps>(
         default:
           return {
             ...baseStyles,
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor:
+              theme.palette.mode === 'dark'
+                ? tokens.colors.surface.glass.dark
+                : tokens.colors.surface.glass.light,
             color: theme.palette.text.primary,
-            boxShadow: theme.shadows[0],
-            borderBottom: `1px solid ${theme.palette.divider}`,
+            boxShadow: 'none',
+            borderBottom: 'none',
+            backdropFilter: tokens.materials.blur.chrome,
+            WebkitBackdropFilter: tokens.materials.blur.chrome,
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: '1px',
+              pointerEvents: 'none',
+              background:
+                theme.palette.mode === 'dark'
+                  ? tokens.colors.surface.hairline.dark
+                  : tokens.colors.surface.hairline.light,
+            },
+            '@media (prefers-reduced-transparency: reduce)': {
+              backgroundColor: theme.palette.background.paper,
+              backdropFilter: 'none',
+              WebkitBackdropFilter: 'none',
+            },
             '& .MuiLink-root, & .nav-button': {
               color: theme.palette.text.primary,
               '&:hover': {
                 color: theme.palette.primary.main,
                 backgroundColor: theme.palette.action.hover,
               },
+              '&:active': {
+                transform: 'scale(0.97)',
+              },
               '&:focus-visible': {
                 outline: `2px solid ${theme.palette.primary.main}`,
                 outlineOffset: theme.spacing(0.25),
+              },
+              '@media (prefers-reduced-motion: reduce)': {
+                '&:active': {
+                  transform: 'none',
+                },
               },
             },
           };
@@ -459,7 +491,7 @@ export const AppBarImpl = React.forwardRef<HTMLDivElement, AppBarProps>(
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <LoginIcon fontSize="small" />
                       </Box>
-                      Login
+                      Sign in
                     </MuiBox>
                   </ListItem>
                 )}
@@ -565,6 +597,7 @@ export const AppBarImpl = React.forwardRef<HTMLDivElement, AppBarProps>(
                   variant="h6"
                   sx={{
                     fontWeight: theme.typography.fontWeightMedium,
+                    letterSpacing: '-0.02em',
                     color: 'inherit',
                     textDecoration: 'none',
                     overflow: 'hidden',
@@ -773,7 +806,7 @@ export const AppBarImpl = React.forwardRef<HTMLDivElement, AppBarProps>(
                       minHeight: '48px',
                       minWidth: '120px',
                       transition: theme.transitions.create(
-                        ['background-color', 'border-color', 'color', 'opacity'],
+                        ['background-color', 'border-color', 'color', 'opacity', 'transform'],
                         {
                           duration: theme.transitions.duration.short,
                         },
@@ -782,6 +815,9 @@ export const AppBarImpl = React.forwardRef<HTMLDivElement, AppBarProps>(
                         backgroundColor: theme.palette.action.hover,
                         borderColor: theme.palette.primary.main,
                         color: theme.palette.primary.main,
+                      },
+                      '&:active:not(:disabled)': {
+                        transform: 'scale(0.97)',
                       },
                       '&:focus-visible': {
                         outline: `2px solid ${theme.palette.primary.main}`,
@@ -880,7 +916,7 @@ export const AppBarImpl = React.forwardRef<HTMLDivElement, AppBarProps>(
                     type="button"
                     disabled={accountActionDisabled}
                     onClick={onAccountButtonClick}
-                    aria-label="Login"
+                    aria-label="Sign in"
                     sx={{
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -899,10 +935,13 @@ export const AppBarImpl = React.forwardRef<HTMLDivElement, AppBarProps>(
                       cursor: 'pointer',
                       minHeight: 40,
                       transition: theme.transitions.create(
-                        ['background-color', 'opacity'],
+                        ['background-color', 'opacity', 'transform'],
                         { duration: theme.transitions.duration.short },
                       ),
                       '&:hover': { backgroundColor: theme.palette.primary.dark },
+                      '&:active:not(:disabled)': {
+                        transform: 'scale(0.97)',
+                      },
                       '&:focus-visible': {
                         outline: `2px solid ${theme.palette.primary.dark}`,
                         outlineOffset: theme.spacing(0.25),
@@ -914,7 +953,7 @@ export const AppBarImpl = React.forwardRef<HTMLDivElement, AppBarProps>(
                     }}
                   >
                     <LoginIcon fontSize="small" />
-                    Login
+                    Sign in
                   </MuiBox>
                 )}
             </Box>

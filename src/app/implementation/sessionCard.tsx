@@ -155,10 +155,10 @@ const ResourceModeChip = ({ isFixedResources }: { isFixedResources: boolean }) =
           borderRadius: '0 0 8px 0',
           backgroundColor: isFixedResources
             ? theme.palette.primary.dark
-            : theme.palette.success.light,
+            : theme.palette.accent.main,
           color: isFixedResources
             ? theme.palette.primary.contrastText
-            : theme.palette.success.contrastText,
+            : theme.palette.accent.contrastText,
         }}
       />
     </Tooltip>
@@ -229,7 +229,9 @@ const BusyOverlay = () => (
       inset: 0,
       zIndex: 2,
       color: theme.palette.primary.main,
-      backgroundColor: alpha(theme.palette.background.paper, 0.72),
+      backgroundColor: alpha(theme.palette.background.paper, 0.48),
+      backdropFilter: 'none',
+      WebkitBackdropFilter: 'none',
     })}
   >
     <CircularProgress color="inherit" size={32} disableShrink />
@@ -385,12 +387,31 @@ export const SessionCardImpl = React.forwardRef<HTMLDivElement, SessionCardProps
           sx={[
             {
               cursor: isConnectable ? 'pointer' : 'default',
-              border: `1px solid ${theme.palette.divider}`,
+              border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'}`,
               position: 'relative',
               display: 'flex',
               flexDirection: 'column',
               overflow: 'hidden',
               height: '100%',
+              transition: theme.transitions.create(
+                ['transform', 'border-color', 'box-shadow'],
+                { duration: theme.transitions.duration.shorter },
+              ),
+              ...(isConnectable && {
+                '&:hover': {
+                  borderColor: theme.palette.primary.main,
+                  boxShadow:
+                    theme.palette.mode === 'dark'
+                      ? '0 8px 24px rgba(0,0,0,0.35)'
+                      : '0 8px 24px rgba(0,0,0,0.08)',
+                },
+                '&:active': {
+                  transform: 'scale(0.985)',
+                },
+                '@media (prefers-reduced-motion: reduce)': {
+                  '&:active': { transform: 'none' },
+                },
+              }),
             },
             ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
           ]}
@@ -498,8 +519,8 @@ export const SessionCardImpl = React.forwardRef<HTMLDivElement, SessionCardProps
             disableSpacing
             sx={{
               position: 'relative',
-              borderTop: 1,
-              borderColor: 'divider',
+              borderTop: 'none',
+              boxShadow: `inset 0 1px 0 ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
               justifyContent: 'flex-end',
               gap: 0.25,
               px: 1.5,

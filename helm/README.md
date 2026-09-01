@@ -14,18 +14,19 @@ Many **`NEXT_PUBLIC_*`** values are fixed at **image build**; runtime env from H
 
 | Chart | AppVersion | Type |
 |:-----:|:----------:|:----:|
-|2.1.0<!-- x-release-please-version --> | eca70d91f45fe6578207c7bd70e67b91d2654700 | application |
+|2.1.0<!-- x-release-please-version --> | 2.1.0 | application |
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
-| app | object | `{"api":{"login":"","skaha":"","srcCavern":"","srcSkaha":"","storage":"","timeoutMs":""},"auth":{"authSecret":{"existingSecret":"","secretKey":""},"nextauthUrl":""},"basePath":"","oidc":{"callbackUri":"","clientId":"","clientSecret":{"existingSecret":"","secretKey":""},"enabled":false,"redirectUri":"","scope":"","uri":""},"public":{"api":{"login":"","skaha":"","srcCavern":"","srcSkaha":"","timeoutMs":""},"services":{"cadcSearch":"","dataPublication":"","groupManagement":"","openstackCloud":"","sciencePortal":"","storageManagement":""},"srcnetLogoUrl":""}}` | Product / application settings mapped to container env. Prefer over raw `env` for options from [upstream .env.example](https://github.com/canfar/science-portal/blob/main/.env.example). Many `NEXT_PUBLIC_*` values are fixed at **image build**; runtime env here mainly affects the server unless your image supports overrides. **app.api** — server-side (`SERVICE_*`, `LOGIN_API`, …). **app.public** — browser `NEXT_PUBLIC_*`: **public.api** maps to client API bases; **public.services** maps to Services menu / footer links ([eca70d9](https://github.com/canfar/science-portal/commit/eca70d91f45fe6578207c7bd70e67b91d2654700)). If you still use deprecated **app.publicApi** in overlays, it is merged with **public.api** and **public.api** wins on conflicts. |
+| app | object | `{"api":{"login":"","skaha":"","srcCavern":"","srcSkaha":"","storage":"","timeoutMs":""},"auth":{"authSecret":{"existingSecret":"","secretKey":""},"nextauthUrl":""},"basePath":"","oidc":{"callbackUri":"","clientId":"","clientSecret":{"existingSecret":"","secretKey":""},"clockToleranceSeconds":"","enabled":false,"redirectUri":"","scope":"","uri":""},"public":{"api":{"login":"","skaha":"","srcCavern":"","srcSkaha":"","timeoutMs":""},"services":{"cadcSearch":"","dataPublication":"","groupManagement":"","openstackCloud":"","sciencePortal":"","storageManagement":""},"srcnetLogoUrl":""}}` | Product / application settings mapped to container env. Prefer over raw `env` for options from [upstream .env.example](https://github.com/canfar/science-portal/blob/main/.env.example). Many `NEXT_PUBLIC_*` values are fixed at **image build**; runtime env here mainly affects the server unless your image supports overrides. **app.api** — server-side (`SERVICE_*`, `LOGIN_API`, …). **app.public** — browser `NEXT_PUBLIC_*`: **public.api** maps to client API bases; **public.services** maps to Services menu / footer links ([eca70d9](https://github.com/canfar/science-portal/commit/eca70d91f45fe6578207c7bd70e67b91d2654700)). If you still use deprecated **app.publicApi** in overlays, it is merged with **public.api** and **public.api** wins on conflicts. |
 | app.api | object | `{"login":"","skaha":"","srcCavern":"","srcSkaha":"","storage":"","timeoutMs":""}` | Server-side API URLs (`SERVICE_STORAGE_API`, `LOGIN_API`, `SKAHA_API`, `SRC_*`, `API_TIMEOUT`). Empty keys are omitted. |
 | app.auth | object | `{"authSecret":{"existingSecret":"","secretKey":""},"nextauthUrl":""}` | NextAuth (`AUTH_TRUST_HOST`, `NEXTAUTH_URL`, optional `AUTH_SECRET` from Secret refs). |
 | app.basePath | string | `""` | URL path prefix; must match `NEXT_PUBLIC_BASE_PATH` in the image. When non-empty, sets env `NEXT_PUBLIC_BASE_PATH`. HTTP probes hit this path (or /science-portal when empty). |
-| app.oidc | object | `{"callbackUri":"","clientId":"","clientSecret":{"existingSecret":"","secretKey":""},"clockToleranceSeconds":"","enabled":false,"redirectUri":"","scope":"","uri":""}` | OIDC settings. When `enabled` and `uri` are set, emits paired NEXT_OIDC_* / NEXT_PUBLIC_OIDC_* env vars. Use with useCanfar: false. Client secret via existingSecret + secretKey only. Optional `clockToleranceSeconds` sets JWT `nbf`/`exp` clock skew tolerance (most deployments can omit it). |
+| app.oidc | object | `{"callbackUri":"","clientId":"","clientSecret":{"existingSecret":"","secretKey":""},"clockToleranceSeconds":"","enabled":false,"redirectUri":"","scope":"","uri":""}` | OIDC settings. When `enabled` and `uri` are set, emits paired NEXT_OIDC_* / NEXT_PUBLIC_OIDC_* env vars. Use with useCanfar: false. Client secret via existingSecret + secretKey only. |
+| app.oidc.clockToleranceSeconds | string | `""` | Optional JWT clock tolerance in seconds (`NEXT_OIDC_CLOCK_TOLERANCE_SECONDS`). When unset, the app default (60) applies. Most deployments do not need this. During OIDC login the portal validates the IdP `id_token`; if the token's `nbf` (not before) timestamp is even slightly ahead of the pod clock, validation fails with "unexpected JWT nbf claim value". This setting widens the allowed skew (in seconds) between the portal and IdP clocks. Prefer fixing NTP on nodes/pods first; raise only if that error persists. |
 | app.public | object | `{"api":{"login":"","skaha":"","srcCavern":"","srcSkaha":"","timeoutMs":""},"services":{"cadcSearch":"","dataPublication":"","groupManagement":"","openstackCloud":"","sciencePortal":"","storageManagement":""},"srcnetLogoUrl":""}` | Browser-facing `NEXT_PUBLIC_*` settings (runtime overrides when the image supports them). |
 | app.public.api | object | `{"login":"","skaha":"","srcCavern":"","srcSkaha":"","timeoutMs":""}` | Client-side API bases (`NEXT_PUBLIC_*_API`, `NEXT_PUBLIC_API_TIMEOUT`). Empty keys are omitted. |
 | app.public.services | object | `{"cadcSearch":"","dataPublication":"","groupManagement":"","openstackCloud":"","sciencePortal":"","storageManagement":""}` | Services menu / footer links (`NEXT_PUBLIC_SERVICE_*`). Empty keys are omitted. Requires an image built from eca70d9 or later. |
@@ -44,7 +45,7 @@ Many **`NEXT_PUBLIC_*`** values are fixed at **image build**; runtime env from H
 | httpRoute.parentRefs[0].sectionName | string | `"http"` |  |
 | httpRoute.rules[0].matches[0].path.type | string | `"PathPrefix"` |  |
 | httpRoute.rules[0].matches[0].path.value | string | `"/"` |  |
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/canfar/science-portal","tag":"eca70d91f45fe6578207c7bd70e67b91d2654700"}` | Container image (repository and tag). |
+| image | object | `{"pullPolicy":"Always","repository":"images.opencadc.org/platform/science-portal","tag":"2.1.0"}` | Container image (repository and tag). |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `""` |  |
@@ -76,8 +77,8 @@ Many **`NEXT_PUBLIC_*`** values are fixed at **image build**; runtime env from H
 | service.port | int | `3000` |  |
 | service.type | string | `"ClusterIP"` |  |
 | serviceAccount.annotations | object | `{}` |  |
-| serviceAccount.automount | bool | `true` |  |
-| serviceAccount.create | bool | `true` |  |
+| serviceAccount.automount | bool | `false` |  |
+| serviceAccount.create | bool | `false` |  |
 | serviceAccount.name | string | `""` |  |
 | startupProbe.failureThreshold | int | `30` |  |
 | startupProbe.httpGet.port | string | `"http"` |  |

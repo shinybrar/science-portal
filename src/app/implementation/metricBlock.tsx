@@ -28,26 +28,28 @@ export const MetricBlockImpl: React.FC<MetricBlockProps> = React.memo(
 
     // Define colors based on metric type
     const chartColors = useMemo(() => {
+      const free =
+        theme.palette.mode === 'dark' ? theme.palette.grey[700] : theme.palette.grey[300];
+
       if (label === 'CPU') {
-        // Teal colors for CPU
         return {
-          used: '#008B8B', // Dark cyan/teal
-          free: theme.palette.grey[300],
-        };
-      } else if (label === 'RAM') {
-        // Orange colors for RAM
-        return {
-          used: '#FF8C00', // Dark orange
-          free: theme.palette.grey[300],
-        };
-      } else {
-        // Blue colors for Running Instances
-        return {
-          used: '#1E3A8A', // Navy blue for session
-          free: '#3B82F6', // Blue for desktopApp
-          headless: '#60A5FA', // Light blue for headless
+          used: theme.palette.primary.main,
+          free,
         };
       }
+
+      if (label === 'RAM') {
+        return {
+          used: theme.palette.warning.main,
+          free,
+        };
+      }
+
+      return {
+        used: theme.palette.primary.dark,
+        free: theme.palette.primary.main,
+        headless: theme.palette.primary.light,
+      };
     }, [label, theme]);
 
     // Define legend items based on metric type

@@ -41,10 +41,6 @@ export const TextFieldImpl = React.forwardRef<HTMLDivElement, TextFieldProps>(
             fontSize:
               size === 'sm' ? theme.typography.body2.fontSize : theme.typography.body1.fontSize,
             fontWeight: theme.typography.fontWeightMedium,
-            color: theme.palette.text.secondary,
-            '&.Mui-focused': {
-              color: theme.palette.primary.main,
-            },
             '&.Mui-error': {
               color: theme.palette.error.main,
             },
@@ -55,12 +51,17 @@ export const TextFieldImpl = React.forwardRef<HTMLDivElement, TextFieldProps>(
             fontSize:
               size === 'sm' ? theme.typography.body2.fontSize : theme.typography.body1.fontSize,
             backgroundColor: theme.palette.background.default,
-            transition: 'none', // Remove transition for cleaner interaction
+            transition: theme.transitions.create(['background-color', 'border-color'], {
+              duration: theme.transitions.duration.shorter,
+            }),
             '& .MuiOutlinedInput-notchedOutline': {
               borderColor: theme.palette.divider,
               borderWidth: '1px',
             },
-            // Hover effect removed for cleaner look
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor:
+                theme.palette.mode === 'dark' ? theme.palette.grey[500] : theme.palette.grey[400],
+            },
             '&.Mui-focused': {
               backgroundColor: theme.palette.background.paper,
               '& .MuiOutlinedInput-notchedOutline': {
@@ -86,7 +87,9 @@ export const TextFieldImpl = React.forwardRef<HTMLDivElement, TextFieldProps>(
             fontSize:
               size === 'sm' ? theme.typography.body2.fontSize : theme.typography.body1.fontSize,
             backgroundColor: theme.palette.action.hover,
-            transition: 'none', // Remove transition for cleaner interaction
+            transition: theme.transitions.create('background-color', {
+              duration: theme.transitions.duration.shorter,
+            }),
             // Hover effect removed for cleaner look
             '&.Mui-focused': {
               backgroundColor: theme.palette.action.selected,
@@ -98,7 +101,9 @@ export const TextFieldImpl = React.forwardRef<HTMLDivElement, TextFieldProps>(
               size === 'sm' ? theme.typography.body2.fontSize : theme.typography.body1.fontSize,
             '&:before': {
               borderBottomColor: theme.palette.divider,
-              transition: 'none', // Remove transition for cleaner interaction
+              transition: theme.transitions.create('border-color', {
+                duration: theme.transitions.duration.shorter,
+              }),
             },
             // Hover effect removed for cleaner look
             '&.Mui-focused:after': {

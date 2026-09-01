@@ -17,6 +17,7 @@ import {
   CardMediaProps,
 } from '@/app/types/CardProps';
 import React from 'react';
+import { tokens } from '@/app/design-system/tokens';
 
 // Card Implementation
 export const CardImpl = React.forwardRef<HTMLDivElement, CardProps>(
@@ -28,7 +29,7 @@ export const CardImpl = React.forwardRef<HTMLDivElement, CardProps>(
           width="100%"
           height={200}
           sx={{
-            borderRadius: 2,
+            borderRadius: tokens.borderRadius.xlCSS,
           }}
         />
       );

@@ -90,7 +90,6 @@ export const ButtonImpl = React.forwardRef<HTMLButtonElement, ButtonProps>(
         sx={{
           textTransform: 'none',
           borderRadius: theme.shape.borderRadius,
-          transition: 'none', // Remove transition for cleaner interaction
           position: 'relative',
           ...(variant === 'ghost' &&
             {

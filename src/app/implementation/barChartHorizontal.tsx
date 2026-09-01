@@ -172,7 +172,7 @@ export const BarChartHorizontalImpl: React.FC<BarChartHorizontalProps> = React.m
       >
         {title && (
           <Typography
-            variant="body1"
+            variant="body2"
             sx={{
               color: textColor,
               fontWeight: tokens.typography.fontWeight.medium,

@@ -56,15 +56,18 @@ export const CanfarRangeImpl = React.forwardRef<HTMLDivElement, CanfarRangeProps
               height: 20,
               width: 20,
               backgroundColor: theme.palette.primary.main,
-              border: '2px solid #fff',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+              border: `2px solid ${theme.palette.background.paper}`,
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.18)',
               '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
-                boxShadow: '0 3px 8px rgba(0, 0, 0, 0.3)',
+                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.22)',
               },
               '&:before': { display: 'none' },
             },
             '& .MuiSlider-rail': {
-              color: theme.palette.mode === 'dark' ? '#bfbfbf' : '#dee2e6',
+              color:
+                theme.palette.mode === 'dark'
+                  ? theme.palette.grey[700]
+                  : theme.palette.grey[300],
               opacity: 1,
               height: 8,
             },

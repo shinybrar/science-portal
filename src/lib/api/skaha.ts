@@ -356,6 +356,24 @@ export async function getContext(): Promise<ContextResponse> {
 }
 
 /**
+ * Platform capacity and allocation (Skaha `view=stats`, Metrics-backed).
+ */
+export async function getPlatformLoad(): Promise<PlatformLoad> {
+  const authHeaders = getAuthHeader();
+  const response = await fetch(`${sessionsApiRoot()}/platform-load`, {
+    method: 'GET',
+    headers: { Accept: 'application/json', ...authHeaders },
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch platform load: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+/**
  * Get session logs
  */
 export async function getSessionLogs(sessionId: string): Promise<string> {

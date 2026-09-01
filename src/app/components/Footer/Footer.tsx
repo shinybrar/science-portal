@@ -3,7 +3,6 @@ import { Box } from '@/app/components/Box/Box';
 import { Grid } from '@/app/components/Grid/Grid';
 import { Typography } from '@/app/components/Typography/Typography';
 import { Link } from '@/app/components/Link/Link';
-import { Divider } from '@/app/components/Divider/Divider';
 import { SocialLink, SocialLinkProps } from '@/app/components/SocialLink/SocialLink';
 import { Container } from '@mui/material';
 
@@ -31,13 +30,19 @@ export const Footer: React.FC<FooterProps> = ({
   copyright = `© ${new Date().getFullYear()}`,
 }) => {
   return (
-    <Box component="footer" sx={{ mt: 'auto', pt: 6 }}>
+    <Box component="footer" sx={{ mt: 'auto', pt: 8, pb: 6 }}>
       <Container maxWidth="lg">
-        <Divider sx={{ mb: 4 }} />
+        <Box
+          sx={(theme) => ({
+            height: '1px',
+            mb: 5,
+            background: `linear-gradient(to right, transparent, ${theme.palette.divider}, transparent)`,
+          })}
+        />
 
         <Grid container spacing={4}>
           <Grid size={12}>
-            <Typography variant="body2" color="secondary" sx={{ mb: 3 }}>
+            <Typography variant="body2" color="secondary" sx={{ mb: 1 }}>
               {copyright}
             </Typography>
           </Grid>
@@ -45,7 +50,16 @@ export const Footer: React.FC<FooterProps> = ({
           {sections.map((section, index) => (
             <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
               {!section.hidden && (
-                <Typography variant="h6" gutterBottom>
+                <Typography
+                  variant="overline"
+                  component="h2"
+                  sx={{
+                    display: 'block',
+                    mb: 1.5,
+                    color: 'text.secondary',
+                    letterSpacing: '0.08em',
+                  }}
+                >
                   {section.title}
                 </Typography>
               )}

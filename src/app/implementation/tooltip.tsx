@@ -25,37 +25,11 @@ export const TooltipImpl: React.FC<TooltipProps> = ({
   };
 
   const tooltipStyles = {
-    fontFamily: theme.typography.fontFamily,
-    fontSize: theme.typography.caption.fontSize,
-    fontWeight: theme.typography.fontWeightMedium,
-    borderRadius: `${theme.shape.borderRadius}px`,
-    backgroundColor:
-      theme.palette.mode === 'dark' ? theme.palette.grey[700] : theme.palette.grey[800],
-    color: theme.palette.common.white,
-    padding: theme.spacing(1, 1.5),
-    maxWidth: '300px',
-    boxShadow: theme.shadows[4],
-    lineHeight: '1.5',
-    border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.divider}` : 'none',
-    ...(theme.palette.mode === 'light' && {
-      backgroundColor: theme.palette.grey[800],
-    }),
-    '& .MuiTooltip-arrow': {
-      color: theme.palette.mode === 'dark' ? theme.palette.grey[700] : theme.palette.grey[800],
-      '&::before': {
-        border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.divider}` : 'none',
-      },
-    },
+    maxWidth: 300,
   };
 
   const popperStyles = {
     zIndex: theme.zIndex.tooltip,
-    '& .MuiTooltip-tooltip': {
-      transition: theme.transitions.create(['opacity', 'transform'], {
-        duration: theme.transitions.duration.shorter,
-        easing: theme.transitions.easing.easeOut,
-      }),
-    },
   };
 
   const tooltipComponent = (

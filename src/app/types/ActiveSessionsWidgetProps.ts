@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { SessionCardProps } from './SessionCardProps';
 
 export interface ActiveSessionsWidgetProps {
@@ -13,6 +14,8 @@ export interface ActiveSessionsWidgetProps {
   showSessionCount?: boolean;
   maxSessionsToShow?: number;
   emptyMessage?: string;
-  /** When true, stretch to match the User Home Storage panel height on desktop. */
+  /** Extra header controls (e.g. home-storage ring). */
+  headerActions?: ReactNode;
+  /** When true, stretch to match a sibling panel height on desktop. */
   fillHeight?: boolean;
 }

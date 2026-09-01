@@ -15,6 +15,7 @@ import {
 import { Refresh as RefreshIcon, HelpOutline as HelpOutlineIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import type { DashboardWidgetProps, DashboardWidgetHelp } from '@/app/types/DashboardWidgetProps';
+import { tokens } from '@/app/design-system/tokens';
 
 function HelpAffordance({ help, widgetTitle }: { help: DashboardWidgetHelp; widgetTitle: React.ReactNode }) {
   const theme = useTheme();
@@ -89,6 +90,7 @@ export function DashboardWidgetImpl({
   refreshAriaLabel = 'refresh',
   refreshTooltip,
   help,
+  headerActions,
   showStatusBar = true,
   statusValue = 100,
   footer,
@@ -131,11 +133,16 @@ export function DashboardWidgetImpl({
       sx={[
         {
           position: 'relative',
+          width: '100%',
+          minWidth: 0,
           padding: theme.spacing(2),
           overflow: 'hidden',
-          borderRadius: 2,
-          border: `1px solid ${theme.palette.divider}`,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          borderRadius: tokens.borderRadius.xlCSS,
+          border: `1px solid ${theme.palette.mode === 'dark' ? tokens.colors.surface.hairline.dark : tokens.colors.surface.hairline.light}`,
+          boxShadow:
+            theme.palette.mode === 'dark'
+              ? '0 1px 2px rgba(0,0,0,0.35)'
+              : '0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04)',
           display: 'flex',
           flexDirection: 'column',
           ...(maxWidth !== undefined && { maxWidth }),
@@ -162,11 +169,7 @@ export function DashboardWidgetImpl({
           alignItems: 'center',
           marginBottom: theme.spacing(1),
           flexShrink: 0,
-          [theme.breakpoints.down('sm')]: {
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            gap: 1,
-          },
+          gap: 1,
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
@@ -178,41 +181,60 @@ export function DashboardWidgetImpl({
                 fontSize: theme.typography.body1.fontSize,
                 fontWeight: theme.typography.fontWeightBold,
               },
+              letterSpacing: '-0.02em',
+              fontWeight: theme.typography.fontWeightBold,
             }}
           >
             {title}
           </Typography>
           {help && <HelpAffordance help={help} widgetTitle={title} />}
         </Box>
-        {refreshButton &&
-          (refreshTooltip ? (
-            // span keeps the tooltip working while the button is disabled
-            <Tooltip title={refreshTooltip}>
-              <Box component="span" sx={{ display: 'inline-flex' }}>
-                {refreshButton}
-              </Box>
-            </Tooltip>
-          ) : (
-            refreshButton
-          ))}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, ml: 'auto', flexShrink: 0 }}>
+          {headerActions}
+          {refreshButton &&
+            (refreshTooltip ? (
+              // span keeps the tooltip working while the button is disabled
+              <Tooltip title={refreshTooltip}>
+                <Box component="span" sx={{ display: 'inline-flex' }}>
+                  {refreshButton}
+                </Box>
+              </Tooltip>
+            ) : (
+              refreshButton
+            ))}
+        </Box>
       </Box>
 
-      {/* Status bar */}
-      {showStatusBar && (
-        <LinearProgress
-          color={isBusy ? 'primary' : 'success'}
-          variant={isBusy ? 'indeterminate' : 'determinate'}
-          value={isBusy ? undefined : statusValue}
-          sx={{
-            width: '100%',
-            height: 4,
-            marginBottom: theme.spacing(2),
-            borderRadius: 2,
-            flexShrink: 0,
-            '& .MuiLinearProgress-bar': { borderRadius: 2 },
-          }}
-        />
-      )}
+      {/* Status bar — visible motion only while fetching; idle is a hairline. */}
+      {showStatusBar &&
+        (isBusy ? (
+          <LinearProgress
+            color="primary"
+            variant="indeterminate"
+            sx={{
+              width: '100%',
+              height: 3,
+              marginBottom: theme.spacing(2),
+              borderRadius: 2,
+              flexShrink: 0,
+              '& .MuiLinearProgress-bar': { borderRadius: 2 },
+            }}
+          />
+        ) : (
+          <Box
+            aria-hidden
+            sx={{
+              width: '100%',
+              height: '1px',
+              marginBottom: theme.spacing(2),
+              flexShrink: 0,
+              backgroundColor:
+                theme.palette.mode === 'dark'
+                  ? tokens.colors.surface.hairline.dark
+                  : tokens.colors.surface.hairline.light,
+            }}
+          />
+        ))}
 
       {/* Content */}
       <Box

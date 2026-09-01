@@ -186,9 +186,9 @@ export const LoginModalImpl = React.forwardRef<HTMLDivElement, LoginModalProps>(
         aria-describedby={displayError ? 'login-error-message' : undefined}
         {...dialogProps}
       >
-        <DialogTitle id="login-dialog-title">
+        <DialogTitle id="login-dialog-title" sx={{ pr: 2 }}>
           <Box display="flex" alignItems="center" justifyContent="space-between">
-            {title || 'Login'}
+            {title || 'Sign in'}
             <IconButton
               aria-label="Close login dialog"
               onClick={handleCancelClick}
@@ -377,7 +377,7 @@ export const LoginModalImpl = React.forwardRef<HTMLDivElement, LoginModalProps>(
               aria-busy={showLoading}
               startIcon={showLoading ? <CircularProgress size={20} /> : null}
             >
-              {showLoading ? 'Logging in...' : 'Login'}
+              {showLoading ? 'Signing in…' : 'Sign in'}
             </Button>
           </DialogActions>
         </form>

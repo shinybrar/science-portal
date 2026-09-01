@@ -4,29 +4,31 @@
 // All colors have been tested to ensure WCAG AA compliance (4.5:1 contrast ratio)
 export const tokens = {
   colors: {
+    // Inspired by UVic brand web values (blue ocean, green trees, yellow sun).
+    // https://www.uvic.ca/brand/brand-guidelines/colours-fonts/index.php
     primary: {
-      50: '#e3f2fd',
-      100: '#bbdefb',
-      200: '#90caf9',
-      300: '#64b5f6',
-      400: '#42a5f5',
-      500: '#1976d2', // Darkened from #2196f3 for better contrast
-      600: '#1565c0',
-      700: '#0d47a1',
-      800: '#0a3d91',
-      900: '#073581',
+      50: '#e7f4fb',
+      100: '#bee7f9', // UVic light blue
+      200: '#8ad0f0',
+      300: '#57b7e7', // UVic accent blue
+      400: '#0073bc', // UVic digital blue
+      500: '#005493', // UVic websites blue
+      600: '#00457a',
+      700: '#002958', // UVic digital dark blue
+      800: '#002754', // UVic websites dark blue
+      900: '#001a38',
     },
     secondary: {
-      50: '#fce4ec',
-      100: '#f8bbd9',
-      200: '#f48fb1',
-      300: '#f06292',
-      400: '#ec407a',
-      500: '#c2185b', // Darkened from #e91e63 for better contrast
-      600: '#ad1457',
-      700: '#880e4f',
-      800: '#6d0e3e',
-      900: '#520a2e',
+      50: '#e8eef4',
+      100: '#c5d3e3',
+      200: '#8fa7c4',
+      300: '#5a7ba4',
+      400: '#2a4f7a',
+      500: '#002754',
+      600: '#002144',
+      700: '#001a38',
+      800: '#00142b',
+      900: '#000d1c',
     },
     neutral: {
       50: '#fafafa',
@@ -43,95 +45,105 @@ export const tokens = {
       black: '#000000',
     },
     tertiary: {
-      50: '#f3e5f5',
-      100: '#e1bee7',
-      200: '#ce93d8',
-      300: '#ba68c8',
-      400: '#ab47bc',
-      500: '#8e24aa', // Purple for tertiary color
-      600: '#7b1fa2',
-      700: '#6a1b9a',
-      800: '#4a148c',
-      900: '#38006b',
+      50: '#f0f9fd',
+      100: '#bee7f9',
+      200: '#8ad0f0',
+      300: '#57b7e7',
+      400: '#3aa6dc',
+      500: '#57b7e7',
+      600: '#2a8fbe',
+      700: '#1e6f96',
+      800: '#15506c',
+      900: '#0c3345',
     },
     accent: {
-      50: '#fff8e1',
-      100: '#ffecb3',
-      200: '#ffe082',
-      300: '#ffd54f',
-      400: '#ffca28',
-      500: '#ffc107', // Gold/amber for accent color
-      600: '#ffb300',
-      700: '#ffa000',
-      800: '#ff8f00',
-      900: '#ff6f00',
+      50: '#fff8e6',
+      100: '#ffecb8',
+      200: '#fee086',
+      300: '#fdb813', // UVic digital yellow
+      400: '#f5aa1c',
+      500: '#f5aa1c', // UVic websites yellow
+      600: '#d49212',
+      700: '#a6740e',
+      800: '#78570a',
+      900: '#4a3506',
     },
     semantic: {
       error: {
-        50: '#ffebee',
-        100: '#ffcdd2',
-        200: '#ef9a9a',
-        300: '#e57373',
-        400: '#ef5350',
-        500: '#d32f2f', // Darkened from #f44336 for better contrast
-        600: '#c62828',
-        700: '#b71c1c',
-        800: '#a11616',
-        900: '#8b1212',
+        50: '#fbecea',
+        100: '#f5c9c4',
+        200: '#eba399',
+        300: '#e07d6e',
+        400: '#d5584a',
+        500: '#c63527', // UVic crest red — sparingly, for critical only
+        600: '#a82d21',
+        700: '#8a251b',
+        800: '#6c1d15',
+        900: '#4e1510',
       },
       warning: {
-        50: '#fff3e0',
-        100: '#ffe0b2',
-        200: '#ffcc80',
-        300: '#ffb74d',
-        400: '#ffa726',
-        500: '#ff9800',
-        600: '#fb8c00',
-        700: '#f57c00',
-        800: '#a04100', // Further darkened to ensure 4.5:1 contrast
-        900: '#8f3e00', // Darkened for better contrast in alerts
+        50: '#fff8e6',
+        100: '#ffecb8',
+        200: '#fee086',
+        300: '#fdb813',
+        400: '#f5aa1c',
+        500: '#f5aa1c',
+        600: '#d49212',
+        700: '#a6740e',
+        800: '#78570a',
+        900: '#4a3506',
       },
       success: {
-        50: '#e8f5e8',
-        100: '#c8e6c9',
-        200: '#a5d6a7',
-        300: '#81c784',
-        400: '#66bb6a',
-        500: '#2e7d32', // Further darkened to ensure 4.5:1 contrast
-        600: '#1b5e20',
-        700: '#134e16',
-        800: '#0d3911',
-        900: '#072209',
+        50: '#e8f7ea',
+        100: '#c5ebc9',
+        200: '#8ed896',
+        300: '#57c563',
+        400: '#26a739', // UVic green — shapes and icons
+        500: '#008538', // UVic dark green — chips and filled controls
+        600: '#007330',
+        700: '#005c27',
+        800: '#00451d',
+        900: '#002e14',
       },
       info: {
-        50: '#e3f2fd',
-        100: '#bbdefb',
-        200: '#90caf9',
-        300: '#64b5f6',
-        400: '#42a5f5',
-        500: '#1976d2', // Darkened from #2196f3 for better contrast
-        600: '#1565c0',
-        700: '#0d47a1',
-        800: '#0a3d91',
-        900: '#073581',
+        50: '#e7f4fb',
+        100: '#bee7f9',
+        200: '#8ad0f0',
+        300: '#57b7e7',
+        400: '#0073bc',
+        500: '#005493',
+        600: '#00457a',
+        700: '#002958',
+        800: '#002754',
+        900: '#001a38',
       },
     },
     surface: {
       background: {
-        default: '#fafafa',
+        default: '#f5f5f7',
         paper: '#ffffff',
         elevated: '#ffffff',
       },
       backgroundDark: {
-        default: '#121212',
-        paper: '#1e1e1e',
-        elevated: '#2d2d2d',
+        default: '#1c1c1e',
+        paper: '#2c2c2e',
+        elevated: '#3a3a3c',
       },
       overlay: {
         light: 'rgba(255, 255, 255, 0.9)',
         medium: 'rgba(255, 255, 255, 0.7)',
-        dark: 'rgba(0, 0, 0, 0.5)',
-        darker: 'rgba(0, 0, 0, 0.8)',
+        dark: 'rgba(0, 0, 0, 0.36)',
+        darker: 'rgba(0, 0, 0, 0.56)',
+      },
+      glass: {
+        light: 'rgba(255, 255, 255, 0.72)',
+        dark: 'rgba(28, 28, 30, 0.72)',
+        lightSolid: '#ffffff',
+        darkSolid: '#1c1c1e',
+      },
+      hairline: {
+        light: 'rgba(0, 0, 0, 0.08)',
+        dark: 'rgba(255, 255, 255, 0.12)',
       },
       skeleton: {
         light: {
@@ -151,10 +163,10 @@ export const tokens = {
       onLight: '#212121',
       // Contrast-safe text colors for semantic colors
       onError: '#ffffff', // White provides 4.57:1 contrast
-      onWarning: '#212121', // Dark text provides 7.28:1 contrast (white only provides 2.0:1)
-      onSuccess: '#ffffff', // White provides 4.49:1 contrast (borderline, but acceptable)
-      onInfo: '#ffffff', // White provides 4.54:1 contrast
-      onAccent: '#212121', // Dark text provides good contrast with gold/amber accent
+      onWarning: '#002754', // UVic dark blue on yellow
+      onSuccess: '#ffffff',
+      onInfo: '#ffffff',
+      onAccent: '#002754',
       primary: {
         light: '#212121',
         dark: '#ffffff',
@@ -168,12 +180,12 @@ export const tokens = {
         dark: '#4f4f4f',
       },
       link: {
-        onPrimary: '#e3f2fd',
-        onDark: '#bbdefb',
-        onLight: '#1976d2',
+        onPrimary: '#bee7f9',
+        onDark: '#57b7e7',
+        onLight: '#005493',
         hover: {
-          light: '#0d47a1',
-          dark: '#90caf9',
+          light: '#002754',
+          dark: '#57b7e7',
         },
       },
     },
@@ -181,10 +193,10 @@ export const tokens = {
       light: '#e0e0e0',
       medium: '#bdbdbd',
       dark: '#757575',
-      focus: '#2196f3',
-      error: '#f44336',
-      success: '#4caf50',
-      warning: '#ff9800',
+      focus: '#005493',
+      error: '#c63527',
+      success: '#008538',
+      warning: '#f5aa1c',
     },
   },
   spacing: {
@@ -220,9 +232,9 @@ export const tokens = {
   typography: {
     fontFamily: {
       primary:
-        'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif',
       secondary: 'Georgia, "Times New Roman", Times, serif',
-      mono: '"Fira Code", "Monaco", "Cascadia Code", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", monospace',
+      mono: 'ui-monospace, "SF Mono", "Fira Code", "Menlo", "Segoe UI Mono", monospace',
     },
     fontSize: {
       xs: '12px',
@@ -270,24 +282,30 @@ export const tokens = {
   },
   borderRadius: {
     none: 0,
-    sm: 2,
-    base: 4,
-    md: 4,
-    lg: 6,
-    xl: 8,
-    '2xl': 12,
-    '3xl': 16,
+    sm: 8,
+    base: 10,
+    md: 10,
+    lg: 14,
+    xl: 16,
+    '2xl': 20,
+    '3xl': 24,
     full: 9999,
     // String versions for CSS usage
     noneCSS: '0px',
-    smCSS: '2px',
-    baseCSS: '4px',
-    mdCSS: '4px',
-    lgCSS: '6px',
-    xlCSS: '8px',
-    '2xlCSS': '12px',
-    '3xlCSS': '16px',
+    smCSS: '8px',
+    baseCSS: '10px',
+    mdCSS: '10px',
+    lgCSS: '14px',
+    xlCSS: '16px',
+    '2xlCSS': '20px',
+    '3xlCSS': '24px',
     fullCSS: '9999px',
+  },
+  materials: {
+    blur: {
+      chrome: 'blur(6px) saturate(140%)',
+      overlay: 'blur(4px)',
+    },
   },
   shadows: {
     none: 'none',
@@ -348,6 +366,10 @@ export const tokens = {
       skeleton: 'ease-in-out', // Smooth pulse for skeleton screens
       spinner: 'linear', // Continuous rotation for spinners
       bounce: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)', // Bouncy effect for completion
+    },
+    press: {
+      scale: 0.97,
+      duration: '100ms',
     },
   },
   zIndex: {

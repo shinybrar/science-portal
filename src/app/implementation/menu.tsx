@@ -8,30 +8,16 @@ import '@/app/theme/createTheme'; // Import for theme type augmentation
 const useVariantStyles = (variant: 'default' | 'compact') => {
   const theme = useTheme();
 
-  const variantStyles = {
-    default: {
-      '& .MuiPaper-root': {
-        borderRadius: theme.customBorderRadius?.md || theme.shape.borderRadius,
-        boxShadow: theme.shadows[3],
-        border: `1px solid ${theme.palette.divider}`,
-        backgroundColor: theme.palette.background.paper,
-      },
-    },
-    compact: {
-      '& .MuiPaper-root': {
-        borderRadius: theme.customBorderRadius?.sm || theme.shape.borderRadius,
-        boxShadow: theme.shadows[1],
-        border: `1px solid ${theme.palette.divider}`,
-        backgroundColor: theme.palette.background.paper,
-      },
+  if (variant === 'compact') {
+    return {
       '& .MuiMenuItem-root': {
         minHeight: 36,
         fontSize: theme.customTypography?.fontSize?.sm || theme.typography.fontSize,
       },
-    },
-  };
+    };
+  }
 
-  return variantStyles[variant];
+  return {};
 };
 
 export const MenuImpl: React.FC<MenuProps> = ({ variant = 'default', ...props }) => {

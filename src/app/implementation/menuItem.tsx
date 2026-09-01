@@ -9,12 +9,7 @@ const useVariantStyles = (variant: 'default' | 'danger') => {
   const theme = useTheme();
 
   const variantStyles = {
-    default: {
-      color: theme.palette.text.primary,
-      '&:hover': {
-        backgroundColor: theme.palette.action.hover,
-      },
-    },
+    default: {},
     danger: {
       color: theme.palette.error.main,
       '&:hover': {

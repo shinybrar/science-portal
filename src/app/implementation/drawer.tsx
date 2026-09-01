@@ -48,8 +48,6 @@ export const DrawerImpl: React.FC<DrawerProps> = ({
   const drawerSize = getDrawerWidth(anchor, width, height);
 
   const paperStyles = {
-    backgroundColor: theme.palette.background.paper,
-    borderColor: theme.palette.divider,
     ...(anchor === 'left' || anchor === 'right' ? { width: drawerSize } : { height: drawerSize }),
   };
 
@@ -62,17 +60,17 @@ export const DrawerImpl: React.FC<DrawerProps> = ({
       hideBackdrop={hideBackdrop}
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
-      BackdropProps={{
-        sx: {
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        },
-        ...BackdropProps,
-      }}
+      BackdropProps={BackdropProps}
       sx={{
         ...styles,
         '& .MuiDrawer-paper': {
           ...paperStyles,
-          boxShadow: variant === 'temporary' ? theme.shadows[16] : 'none',
+          boxShadow:
+            variant === 'temporary'
+              ? theme.palette.mode === 'dark'
+                ? '0 8px 28px rgba(0, 0, 0, 0.45)'
+                : '0 8px 28px rgba(0, 0, 0, 0.12)'
+              : 'none',
         },
       }}
       {...props}

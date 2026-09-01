@@ -57,6 +57,7 @@ export function ActiveSessionsWidgetImpl({
   showSessionCount = true,
   maxSessionsToShow,
   emptyMessage = 'No active sessions',
+  headerActions,
   fillHeight = false,
 }: ActiveSessionsWidgetProps) {
   const theme = useTheme();
@@ -96,6 +97,7 @@ export function ActiveSessionsWidgetImpl({
       isLoading={isLoading}
       isFetching={isFetching}
       onRefresh={onRefresh}
+      headerActions={headerActions}
       fillHeight={fillHeight}
     >
       {/* Content - Session Cards */}

@@ -41,10 +41,6 @@ export const SelectImpl = React.forwardRef<HTMLDivElement, SelectProps>(
             fontSize:
               size === 'sm' ? theme.typography.body2.fontSize : theme.typography.body1.fontSize,
             fontWeight: theme.typography.fontWeightMedium,
-            color: theme.palette.text.secondary,
-            '&.Mui-focused': {
-              color: theme.palette.primary.main,
-            },
             '&.Mui-error': {
               color: theme.palette.error.main,
             },
@@ -84,13 +80,18 @@ export const SelectImpl = React.forwardRef<HTMLDivElement, SelectProps>(
               size === 'sm' ? theme.typography.body2.fontSize : theme.typography.body1.fontSize,
             borderRadius: `${theme.shape.borderRadius}px`,
             backgroundColor: theme.palette.background.default,
-            transition: 'none', // Remove transition for cleaner interaction
+            transition: theme.transitions.create(['background-color', 'border-color'], {
+              duration: theme.transitions.duration.shorter,
+            }),
             '& .MuiOutlinedInput-notchedOutline': {
               borderRadius: `${theme.shape.borderRadius}px`,
               borderColor: theme.palette.divider,
               borderWidth: '1px',
             },
-            // Hover effect removed for cleaner look
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor:
+                theme.palette.mode === 'dark' ? theme.palette.grey[500] : theme.palette.grey[400],
+            },
             '&.Mui-focused': {
               backgroundColor: theme.palette.background.paper,
               '& .MuiOutlinedInput-notchedOutline': {
@@ -121,7 +122,9 @@ export const SelectImpl = React.forwardRef<HTMLDivElement, SelectProps>(
             },
             '& .MuiSelect-icon': {
               color: theme.palette.action.active,
-              transition: 'none', // Remove transition for cleaner interaction
+              transition: theme.transitions.create(['transform', 'color'], {
+                duration: theme.transitions.duration.shorter,
+              }),
               '&.MuiSelect-iconOpen': {
                 transform: 'rotate(180deg)',
                 color: theme.palette.primary.main,
@@ -133,42 +136,9 @@ export const SelectImpl = React.forwardRef<HTMLDivElement, SelectProps>(
           })}
           MenuProps={{
             PaperProps: {
-              sx: (theme) => ({
-                borderRadius: `${theme.shape.borderRadius}px`,
-                backgroundColor: theme.palette.background.paper,
-                boxShadow: theme.shadows[8],
-                border: `1px solid ${theme.palette.divider}`,
-                marginTop: theme.spacing(0.5),
-                maxHeight: '300px',
-                '& .MuiList-root': {
-                  padding: theme.spacing(0.5),
-                },
-                '& .MuiMenuItem-root': {
-                  fontFamily: theme.typography.fontFamily,
-                  fontSize:
-                    size === 'sm'
-                      ? theme.typography.body2.fontSize
-                      : theme.typography.body1.fontSize,
-                  padding: theme.spacing(1, 2),
-                  margin: theme.spacing(0.25, 0.5),
-                  borderRadius: `${Math.max(0, (theme.shape.borderRadius as number) - 2)}px`,
-                  color: theme.palette.text.primary,
-                  minHeight: 'auto',
-                  transition: 'none', // Remove transition for cleaner interaction
-                  // Hover effect removed for cleaner look
-                  '&.Mui-selected': {
-                    backgroundColor: theme.palette.primary.main,
-                    color: theme.palette.primary.contrastText,
-                    // Hover effect removed for cleaner look
-                  },
-                  '&.Mui-focusVisible': {
-                    backgroundColor: theme.palette.action.focus,
-                  },
-                  '&.Mui-disabled': {
-                    color: theme.palette.text.disabled,
-                  },
-                },
-              }),
+              sx: {
+                maxHeight: 300,
+              },
             },
             transformOrigin: {
               vertical: 'top',

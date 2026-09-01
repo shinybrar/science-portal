@@ -51,6 +51,8 @@ export interface DashboardWidgetProps {
   refreshTooltip?: string;
   /** Help link or popover next to the title. */
   help?: DashboardWidgetHelp;
+  /** Extra controls on the header’s trailing edge, before refresh. */
+  headerActions?: ReactNode;
   /** Show the linear status bar under the header. @default true */
   showStatusBar?: boolean;
   /**
