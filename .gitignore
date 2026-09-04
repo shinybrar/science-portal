@@ -35,10 +35,8 @@ pnpm-debug.log*
 .env.production
 .env.development
 
-# Local mock-upstream (dev-only stand-in for Skaha / AC / Cavern)
-/dev/mock-upstream/
+# Local mock-upstream overlay (keep the example; ignore a copied .env.mock)
 .env.mock
-.env.mock.*
 
 # Docker Compose files with secrets (use .example versions)
 docker-compose.canfar.yml

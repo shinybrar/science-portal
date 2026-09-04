@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "mock:upstream": "node dev/mock-upstream/server.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
