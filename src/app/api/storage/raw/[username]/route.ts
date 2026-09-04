@@ -62,7 +62,8 @@ export const GET = withErrorHandling(
         status: response.status,
         statusText: response.statusText,
       });
-      return errorResponse('Failed to fetch storage data', response.status);
+      const errorText = await response.text().catch(() => '');
+      return errorResponse('Failed to fetch storage data', response.status, errorText);
     }
 
     const xmlText = await response.text();

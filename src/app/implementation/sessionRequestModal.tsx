@@ -5,28 +5,16 @@ import { Button, Typography, Box } from '@mui/material';
 import { ErrorOutline as ErrorIcon, RocketLaunch as RequestIcon } from '@mui/icons-material';
 import { PortalModal } from '@/app/components/PortalModal/PortalModal';
 import { SessionRequestModalProps } from '../types/SessionRequestModalProps';
+import { firstJavaErrorLine } from '@/lib/api/http-error';
 import { formatMaxSessionsMessage } from '@/lib/sessions/sessionQuota';
 
 /**
- * Parse and format error messages for better user experience
+ * Map a sanitized excerpt onto launch-specific copy. Never JSON.parse the
+ * backend body here — treat it as untrusted and only match known phrases.
  */
 const parseErrorMessage = (error: string | undefined): string => {
-  if (!error) return 'An unknown error occurred';
-
-  let errorText = error;
-
-  try {
-    const errorObj = JSON.parse(error);
-    if (errorObj.message) {
-      errorText = errorObj.message;
-    } else if (errorObj.details) {
-      errorText = errorObj.details;
-    } else if (errorObj.error) {
-      errorText = errorObj.error;
-    }
-  } catch {
-    // Not JSON, continue with string parsing
-  }
+  const errorText = firstJavaErrorLine(error);
+  if (!errorText) return 'An unknown error occurred';
 
   const maxSessionsMatch = errorText.match(/reached the maximum of (\d+) active sessions/i);
   if (maxSessionsMatch) {
@@ -41,7 +29,7 @@ const parseErrorMessage = (error: string | undefined): string => {
     return 'Resource quota exceeded. Please delete unused sessions or contact support.';
   }
 
-  return errorText.trim();
+  return errorText;
 };
 
 export const SessionRequestModalImpl: React.FC<SessionRequestModalProps> = ({

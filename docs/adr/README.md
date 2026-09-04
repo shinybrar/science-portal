@@ -20,6 +20,7 @@ Each ADR follows a structured format:
 ## Related guides
 
 - [State management developer guide](../state-management.md) — day-to-day rules for where state lives (companion to ADR 0001)
+- [Auth session vs API authorization](../auth-session-authorization.md) — login vs 401/403, dual-mode BFF, token lifecycle, action backlog
 
 ## Contributing
 

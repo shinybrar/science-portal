@@ -55,7 +55,8 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
 
   if (!response.ok) {
     logger.logError(response.status, `Failed to fetch context: ${response.statusText}`);
-    return errorResponse('Failed to fetch context', response.status);
+    const errorText = await response.text().catch(() => '');
+    return errorResponse('Failed to fetch context', response.status, errorText);
   }
 
   const context = await response.json();

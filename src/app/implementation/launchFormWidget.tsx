@@ -14,6 +14,7 @@ import { SESSION_QUOTA_REACHED_MESSAGE } from '@/lib/sessions/sessionQuota';
 export function LaunchFormWidgetImpl({
   isLoading = false,
   isFetching = false,
+  errorMessage,
   onRefresh,
   title = 'Launch New Session',
   showProgressIndicator = false,
@@ -105,6 +106,7 @@ export function LaunchFormWidgetImpl({
       title={title}
       isLoading={isLoading}
       isFetching={isFetching}
+      error={errorMessage}
       onRefresh={onRefresh}
       help={helpUrl ? { url: helpUrl } : undefined}
       statusValue={showProgressIndicator ? progressPercentage : 100}

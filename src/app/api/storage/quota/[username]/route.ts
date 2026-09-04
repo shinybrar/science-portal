@@ -47,7 +47,8 @@ export const GET = withErrorHandling(
     );
 
     if (!response.ok) {
-      return errorResponse('Failed to fetch storage quota', response.status);
+      const errorText = await response.text().catch(() => '');
+      return errorResponse('Failed to fetch storage quota', response.status, errorText);
     }
 
     const data: UserStorageQuota = await response.json();

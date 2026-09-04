@@ -13,6 +13,7 @@ import {
   type ImageRepository,
   type ContextResponse,
 } from '@/lib/api/skaha';
+import { retryUnlessAuthFailure } from '@/lib/query/query-result';
 
 /**
  * Query keys for images
@@ -52,6 +53,7 @@ export function useContainerImages(
     queryFn: getContainerImages,
     // Only fetch if authenticated (default to true for backward compatibility)
     enabled: isAuthenticated !== false,
+    retry: retryUnlessAuthFailure,
     // Cache images for 5 minutes since they don't change frequently
     staleTime: 5 * 60 * 1000,
     ...options,
@@ -77,6 +79,7 @@ export function useImageRepositories(
     queryFn: getImageRepositories,
     // Only fetch if authenticated (default to true for backward compatibility)
     enabled: isAuthenticated !== false,
+    retry: retryUnlessAuthFailure,
     // Cache repository hosts for 10 minutes since they rarely change
     staleTime: 10 * 60 * 1000,
     ...options,
@@ -103,6 +106,7 @@ export function useContext(
     queryFn: getContext,
     // Only fetch if authenticated (default to true for backward compatibility)
     enabled: isAuthenticated !== false,
+    retry: retryUnlessAuthFailure,
     // Cache context for 5 minutes since it may change based on system load
     staleTime: 5 * 60 * 1000,
     ...options,
