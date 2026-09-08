@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Typography, Box, Stack } from '@mui/material';
 import { WarningAmber as WarningAmberIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
@@ -10,24 +10,23 @@ import { MetricBlock } from '../components/MetricBlock/MetricBlock';
 import { PLATFORM_LOAD_DISABLED_MESSAGE } from '@/lib/config/static-platform-load';
 import { tokens } from '@/app/design-system/tokens';
 
-export const PLATFORM_STATS_UNAVAILABLE = 'Platform statistics unavailable';
+const PLATFORM_STATS_UNAVAILABLE = 'Platform statistics unavailable';
 
 function formatPlatformTimestamp(lastUpdate: string | Date): string {
   const dateStr = typeof lastUpdate === 'string' ? lastUpdate : lastUpdate.toISOString();
   return dateStr.replace('T', ' ').slice(0, -5) + ' UTC';
 }
 
-export function PlatformMetricsSection({
+function PlatformMetricsSection({
   data,
   isLoading = false,
 }: {
   data: PlatformLoadData | null;
   isLoading?: boolean;
 }) {
-  const formattedLastUpdate = useMemo(() => {
-    if (!data?.lastUpdate) return null;
-    return formatPlatformTimestamp(data.lastUpdate);
-  }, [data?.lastUpdate]);
+  const formattedLastUpdate = data?.lastUpdate
+    ? formatPlatformTimestamp(data.lastUpdate)
+    : null;
 
   if (!data && !isLoading) {
     return (
@@ -74,9 +73,6 @@ export function PlatformMetricsSection({
   );
 }
 
-/**
- * PlatformLoad implementation component
- */
 export const PlatformLoadImpl: React.FC<PlatformLoadProps> = ({
   data,
   isLoading = false,
