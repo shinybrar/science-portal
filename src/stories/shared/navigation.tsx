@@ -6,19 +6,14 @@ import LinkIcon from '@mui/icons-material/Link';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import SearchIcon from '@mui/icons-material/Search';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
-import HelpIcon from '@mui/icons-material/Help';
-import ChatIcon from '@mui/icons-material/Chat';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DocumentationIcon from '@mui/icons-material/Description';
-import InfoIcon from '@mui/icons-material/Info';
-import DiamondIcon from '@mui/icons-material/Diamond';
+import MailIcon from '@mui/icons-material/Mail';
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import {
   DOCS_URL,
-  ABOUT_URL,
-  OPEN_SOURCE_URL,
   SUPPORT_EMAIL,
   DISCORD_URL,
   STATUS_PAGE_URL,
@@ -32,7 +27,8 @@ import {
   RESET_PASSWORD_URL,
   CERTIFICATE_BASE_URL,
 } from '@/lib/config/site-config';
-// Navigation items structure
+import { DiscordIcon } from '@/app/components/icons/DiscordIcon';
+
 export interface NavigationItem {
   label: string;
   icon?: React.ReactElement;
@@ -44,12 +40,6 @@ export interface NavigationItem {
 
 // Main navigation array
 export const navigationItems: NavigationItem[] = [
-  {
-    label: 'Documentation',
-    icon: <DocumentationIcon />,
-    href: DOCS_URL,
-    type: 'link',
-  },
   {
     label: 'Services',
     type: 'menu',
@@ -88,25 +78,18 @@ export const navigationItems: NavigationItem[] = [
     ],
   },
   {
-    label: 'About',
-    icon: <InfoIcon />,
-    href: ABOUT_URL,
-    type: 'link',
-  },
-  {
-    label: 'Open Source',
-    icon: <DiamondIcon />,
-    href: OPEN_SOURCE_URL,
-    type: 'link',
-  },
-  {
     label: 'Support',
     type: 'menu',
     menuItems: [
-      { label: 'Help', icon: <HelpIcon />, href: SUPPORT_EMAIL, type: 'link' },
+      {
+        label: 'Documentation',
+        icon: <DocumentationIcon />,
+        href: DOCS_URL,
+        type: 'link',
+      },
       {
         label: 'Join us on Discord',
-        icon: <ChatIcon />,
+        icon: <DiscordIcon />,
         href: DISCORD_URL,
         type: 'link',
       },
@@ -114,6 +97,12 @@ export const navigationItems: NavigationItem[] = [
         label: 'Status Page',
         icon: <MonitorHeartIcon />,
         href: STATUS_PAGE_URL,
+        type: 'link',
+      },
+      {
+        label: 'Email Support',
+        icon: <MailIcon />,
+        href: SUPPORT_EMAIL,
         type: 'link',
       },
     ],
@@ -149,21 +138,20 @@ export const userMenuItems: NavigationItem[] = [
   },
 ];
 
-// Helper functions to extract specific menu items for backward compatibility
-export const getServicesMenuItems = () =>
-  navigationItems.find((item) => item.label === 'Services')?.menuItems || [];
-
-export const getSupportMenuItems = () =>
-  navigationItems.find((item) => item.label === 'Support')?.menuItems || [];
-
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const srcNetLogoSrc =
   process.env.NEXT_PUBLIC_SRCNET_LOGO_URL || `${basePath}/SRCNetLogo.png`;
 
 // CANFAR logo component
-export const CanfarLogo = ({ height = 40 }: { height?: number }) => (
+export const CanfarLogo = ({
+  height = 40,
+  alt = 'CANFAR Logo',
+}: {
+  height?: number;
+  alt?: string;
+}) => (
   /* eslint-disable-next-line @next/next/no-img-element */
-  <img src={`${basePath}/logo.png`} alt="CANFAR Logo" style={{ height }} />
+  <img src={`${basePath}/logo.png`} alt={alt} style={{ height }} />
 );
 
 // SRCNet logo component (for OIDC mode)

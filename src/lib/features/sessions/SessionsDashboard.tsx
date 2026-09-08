@@ -183,10 +183,25 @@ export function SessionsDashboard() {
       },
       {
         title: 'Support',
+        layout: 'cards' as const,
         links: [
-          { label: 'Help', href: SUPPORT_EMAIL, external: false },
-          { label: 'Join us on Discord', href: DISCORD_URL, external: true },
-          { label: 'Status Page', href: STATUS_PAGE_URL, external: true },
+          {
+            label: 'Email Support',
+            href: SUPPORT_EMAIL,
+            description: 'support@canfar.net',
+          },
+          {
+            label: 'Discord',
+            href: DISCORD_URL,
+            external: true,
+            description: 'Community chat',
+          },
+          {
+            label: 'Platform status',
+            href: STATUS_PAGE_URL,
+            external: true,
+            description: 'Uptime and incidents',
+          },
         ],
       },
     ],
@@ -283,7 +298,9 @@ export function SessionsDashboard() {
         )}
       </Box>
 
-      {!isOIDCMode && <Footer sections={footerSections} copyright="© 2022-2026" />}
+      {!isOIDCMode && (
+        <Footer sections={footerSections} copyright="© 2022–2026 CANFAR Science Platform" />
+      )}
     </>
   );
 }

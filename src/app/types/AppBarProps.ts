@@ -20,7 +20,7 @@ export interface AppBarProps extends Omit<MuiAppBarProps, 'position' | 'variant'
   logo?: ReactNode;
   logoHref?: string;
   onLogoClick?: () => void;
-  wordmark?: string;
+  wordmark?: ReactNode;
   links?: AppBarLink[];
   menuItems?: AppBarMenuItem[];
   menuLabel?: ReactNode;

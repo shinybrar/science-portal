@@ -1,37 +1,40 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { createTheme, ThemeMode } from './createTheme';
 import type { Theme } from '@mui/material/styles';
 
+export type ThemePreference = ThemeMode | 'system';
+
 interface ThemeContextType {
   mode: ThemeMode;
-  toggleTheme: () => void;
-  setTheme: (mode: ThemeMode) => void;
+  preference: ThemePreference;
+  setTheme: (preference: ThemePreference) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const useTheme = (): ThemeContextType => {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
-};
+function isThemePreference(value: string | null): value is ThemePreference {
+  return value === 'light' || value === 'dark' || value === 'system';
+}
 
-// Safe version that returns default values when outside ThemeProvider
+function systemMode(): ThemeMode {
+  if (typeof window === 'undefined') return 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function resolveMode(preference: ThemePreference): ThemeMode {
+  return preference === 'system' ? systemMode() : preference;
+}
+
 export const useSafeTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext);
   if (!context) {
-    // Return default theme context when not within provider
     return {
       mode: 'light',
-      toggleTheme: () => {
-        console.warn('ThemeProvider not found, theme toggle disabled');
-      },
+      preference: 'light',
       setTheme: () => {
         console.warn('ThemeProvider not found, theme change disabled');
       },
@@ -44,7 +47,7 @@ interface ThemeProviderProps {
   children: ReactNode;
   defaultMode?: ThemeMode;
   storageKey?: string;
-  theme?: Theme; // Allow custom theme override
+  theme?: Theme;
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({
@@ -53,58 +56,60 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   storageKey = 'canfar-ui-theme',
   theme: customTheme,
 }) => {
+  const [preference, setPreference] = useState<ThemePreference>(defaultMode);
   const [mode, setMode] = useState<ThemeMode>(defaultMode);
 
-  // Update mode when defaultMode changes
   useEffect(() => {
-    setMode(defaultMode);
+    setPreference(defaultMode);
   }, [defaultMode]);
 
-  // Load theme from localStorage on mount
   useEffect(() => {
-    // Skip localStorage in Storybook environment
     if (storageKey.startsWith('storybook-')) return;
 
     try {
-      const savedTheme = localStorage.getItem(storageKey) as ThemeMode;
-      if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
-        setMode(savedTheme);
+      const saved = localStorage.getItem(storageKey);
+      if (isThemePreference(saved)) {
+        setPreference(saved);
       }
     } catch (error) {
       console.warn('Failed to load theme from localStorage:', error);
     }
   }, [storageKey]);
 
-  // Save theme to localStorage when it changes
   useEffect(() => {
-    // Skip localStorage in Storybook environment
-    if (storageKey.startsWith('storybook-')) return;
+    setMode(resolveMode(preference));
+    if (preference !== 'system') return;
 
-    try {
-      localStorage.setItem(storageKey, mode);
-    } catch (error) {
-      console.warn('Failed to save theme to localStorage:', error);
-    }
-  }, [mode, storageKey]);
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = () => setMode(systemMode());
+    media.addEventListener('change', onChange);
+    return () => media.removeEventListener('change', onChange);
+  }, [preference]);
 
-  const toggleTheme = () => {
-    setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
-  };
+  const persist = useCallback(
+    (next: ThemePreference) => {
+      if (storageKey.startsWith('storybook-')) return;
+      try {
+        localStorage.setItem(storageKey, next);
+      } catch (error) {
+        console.warn('Failed to save theme to localStorage:', error);
+      }
+    },
+    [storageKey],
+  );
 
-  const setTheme = (newMode: ThemeMode) => {
-    setMode(newMode);
-  };
+  const setTheme = useCallback(
+    (next: ThemePreference) => {
+      setPreference(next);
+      persist(next);
+    },
+    [persist],
+  );
 
   const theme = customTheme || createTheme(mode);
 
-  const contextValue: ThemeContextType = {
-    mode,
-    toggleTheme,
-    setTheme,
-  };
-
   return (
-    <ThemeContext.Provider value={contextValue}>
+    <ThemeContext.Provider value={{ mode, preference, setTheme }}>
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
         {children}

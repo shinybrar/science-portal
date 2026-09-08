@@ -1,87 +1,66 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { IconButton, Tooltip, Box } from '@mui/material';
+import React, { useState } from 'react';
+import { IconButton, Tooltip } from '@mui/material';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
+import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
 import { ThemeToggleProps } from '@/app/types/ThemeToggleProps';
-import { useSafeTheme } from '@/app/theme/ThemeContext';
-import { TypographyImpl } from './typography';
+import { useSafeTheme, type ThemePreference } from '@/app/theme/ThemeContext';
+import { Menu } from '@/app/components/Menu/Menu';
+import { MenuItem } from '@/app/components/MenuItem/MenuItem';
 
-// Memoized to prevent re-renders when parent re-renders
-// ThemeToggle only needs to re-render when its props or theme mode change
-export const ThemeToggleImpl: React.FC<ThemeToggleProps> = React.memo(
-  ({ size = 'md', showLabel = false, lightLabel = 'Light', darkLabel = 'Dark' }) => {
-    const { mode, toggleTheme } = useSafeTheme();
+const OPTIONS: { value: ThemePreference; label: string; Icon: typeof LightModeIcon }[] = [
+  { value: 'light', label: 'Light', Icon: LightModeIcon },
+  { value: 'dark', label: 'Dark', Icon: DarkModeIcon },
+  { value: 'system', label: 'System', Icon: SettingsBrightnessIcon },
+];
 
-    // Memoized constant values to prevent recreation on each render
-    const sizeMap = useMemo(
-      () =>
-        ({
-          sm: 'small',
-          md: 'medium',
-          lg: 'large',
-        }) as const,
-      [],
-    );
+const BUTTON_SIZE = { sm: 'small', md: 'medium', lg: 'large' } as const;
+const ICON_PX = { sm: '1rem', md: '1.25rem', lg: '1.5rem' };
 
-    const iconSize = useMemo(
-      () => ({
-        sm: '1rem',
-        md: '1.25rem',
-        lg: '1.5rem',
-      }),
-      [],
-    );
+export const ThemeToggleImpl: React.FC<ThemeToggleProps> = ({ size = 'md' }) => {
+  const { preference, setTheme } = useSafeTheme();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const Icon = OPTIONS.find((option) => option.value === preference)?.Icon ?? LightModeIcon;
 
-    // Memoized computed values that depend on mode
-    const { Icon, label, tooltip } = useMemo(() => {
-      const dark = mode === 'dark';
-      return {
-        Icon: dark ? LightModeIcon : DarkModeIcon,
-        label: dark ? lightLabel : darkLabel,
-        tooltip: `Switch to ${dark ? 'light' : 'dark'} mode`,
-      };
-    }, [mode, lightLabel, darkLabel]);
-
-    if (showLabel) {
-      return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Tooltip title={tooltip}>
-            <IconButton
-              onClick={toggleTheme}
-              size={sizeMap[size]}
-              aria-label={tooltip}
-            >
-              <Icon sx={{ fontSize: iconSize[size] }} />
-            </IconButton>
-          </Tooltip>
-          <TypographyImpl
-            variant="body2"
-            sx={{
-              fontSize: size === 'sm' ? '0.75rem' : size === 'lg' ? '1rem' : '0.875rem',
-              fontWeight: 'medium',
-              userSelect: 'none',
-            }}
-          >
-            {label}
-          </TypographyImpl>
-        </Box>
-      );
-    }
-
-    return (
-      <Tooltip title={tooltip}>
+  return (
+    <>
+      <Tooltip title="Theme">
         <IconButton
-          onClick={toggleTheme}
-          size={sizeMap[size]}
-          aria-label={tooltip}
+          onClick={(event) => setAnchorEl(event.currentTarget)}
+          size={BUTTON_SIZE[size]}
+          aria-label="Theme"
+          aria-haspopup="menu"
+          aria-expanded={open ? 'true' : undefined}
+          aria-controls={open ? 'theme-menu' : undefined}
         >
-          <Icon sx={{ fontSize: iconSize[size] }} />
+          <Icon sx={{ fontSize: ICON_PX[size] }} />
         </IconButton>
       </Tooltip>
-    );
-  },
-);
-
-ThemeToggleImpl.displayName = 'ThemeToggleImpl';
+      <Menu
+        id="theme-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        {OPTIONS.map((option) => (
+          <MenuItem
+            key={option.value}
+            selected={preference === option.value}
+            icon={<option.Icon fontSize="small" />}
+            onClick={() => {
+              setTheme(option.value);
+              setAnchorEl(null);
+            }}
+          >
+            {option.label}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
+  );
+};

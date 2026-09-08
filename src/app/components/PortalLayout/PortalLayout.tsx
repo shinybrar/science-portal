@@ -5,6 +5,7 @@ import { Box } from '@/app/components/Box/Box';
 import { AppBarWithAuth } from '@/app/components/AppBarWithAuth/AppBarWithAuth';
 import { ThemeToggle } from '@/app/components/ThemeToggle/ThemeToggle';
 import { appBarWithUserMenu, CanfarLogo, SRCNetLogo } from '@/stories/shared/navigation';
+import { BrandWordmark } from '@/app/components/BrandWordmark/BrandWordmark';
 import { useAuthStatus } from '@/lib/hooks/useAuth';
 import { usePublicRuntimeConfig } from '@/lib/providers/PublicRuntimeConfigProvider';
 import { useLogoutReset } from '@/lib/hooks/useLogoutReset';
@@ -45,11 +46,11 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         variant="surface"
         position="sticky"
         elevation={0}
-        wordmark="Science Portal"
+        wordmark={isOIDCMode ? 'Science Portal' : <BrandWordmark />}
         logoHref="/"
-        logo={isOIDCMode ? <SRCNetLogo /> : <CanfarLogo />}
+        logo={isOIDCMode ? <SRCNetLogo /> : <CanfarLogo alt="" />}
         links={isOIDCMode ? [] : canfarAppBarLinks}
-        accountButton={<ThemeToggle size="md" />}
+        accountButton={<ThemeToggle />}
         showLoginButton={true}
       />
       {children}

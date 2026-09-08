@@ -229,6 +229,44 @@ export const AppBarImpl = React.forwardRef<HTMLDivElement, AppBarProps>(
       [onLogoClick],
     );
 
+    const brand = (
+      <Link
+        href={logoHref}
+        onClick={handleLogoClick}
+        variant="inherit"
+        underline="none"
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          color: 'inherit',
+          minWidth: 0,
+        }}
+      >
+        {logo}
+        {typeof wordmark === 'string' ? (
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+              letterSpacing: '-0.02em',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              fontSize: {
+                xs: theme.typography.body1.fontSize,
+                sm: theme.typography.h6.fontSize,
+              },
+            }}
+          >
+            {wordmark}
+          </Typography>
+        ) : (
+          wordmark
+        )}
+      </Link>
+    );
+
     const handleMobileDrawerToggle = useCallback(() => {
       toggleMobileDrawer();
     }, [toggleMobileDrawer]);
@@ -282,45 +320,18 @@ export const AppBarImpl = React.forwardRef<HTMLDivElement, AppBarProps>(
               display: 'flex',
               alignItems: 'center',
               gap: {
-                xs: 0.5, // Tighter spacing on small screens
-                sm: 1, // Standard spacing on larger screens
+                xs: 0.5,
+                sm: 1,
               },
-              flex: 1, // Take available space
-              minWidth: 0, // Allow shrinking
+              flex: 1,
+              minWidth: 0,
+              '& img': {
+                height: '28px',
+                width: 'auto',
+              },
             }}
           >
-            {logo && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  // Responsive logo sizing in drawer
-                  '& img': {
-                    height: '28px', // Slightly smaller in drawer
-                    width: 'auto',
-                  },
-                }}
-              >
-                {logo}
-              </Box>
-            )}
-            {wordmark && (
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: theme.typography.fontWeightMedium,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  fontSize: {
-                    xs: theme.typography.body1.fontSize,
-                    sm: theme.typography.h6.fontSize,
-                  },
-                }}
-              >
-                {wordmark}
-              </Typography>
-            )}
+            {brand}
           </Box>
           <IconButton
             onClick={handleMobileDrawerClose}
@@ -555,71 +566,18 @@ export const AppBarImpl = React.forwardRef<HTMLDivElement, AppBarProps>(
                 display: 'flex',
                 alignItems: 'center',
                 flex: isMobile ? 1 : 'none',
-                minWidth: 0, // Allow content to shrink if needed
-                // Ensure proper spacing from hamburger menu
-                ml: isMobile && (links.length > 0 || menuItems.length > 0) ? 0 : 'auto',
+                minWidth: 0,
+                '& img': {
+                  height: {
+                    xs: '32px',
+                    sm: '36px',
+                    md: '40px',
+                  },
+                  width: 'auto',
+                },
               }}
             >
-              {logo && (
-                <Box
-                  sx={{
-                    mr: wordmark ? theme.spacing(1) : 0,
-                    // Responsive logo sizing
-                    '& img': {
-                      height: {
-                        xs: '32px', // 375px and up
-                        sm: '36px', // 600px and up
-                        md: '40px', // 900px and up
-                      },
-                      width: 'auto',
-                      transition: theme.transitions.create('height', {
-                        duration: theme.transitions.duration.short,
-                      }),
-                    },
-                  }}
-                >
-                  <Link
-                    href={logoHref}
-                    onClick={handleLogoClick}
-                    variant="inherit"
-                    underline="none"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    {logo}
-                  </Link>
-                </Box>
-              )}
-              {wordmark && (
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: theme.typography.fontWeightMedium,
-                    letterSpacing: '-0.02em',
-                    color: 'inherit',
-                    textDecoration: 'none',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    // Responsive font sizing
-                    fontSize: {
-                      xs: theme.typography.body1.fontSize, // Smaller on mobile
-                      sm: theme.typography.h6.fontSize, // Standard size on tablet+
-                    },
-                    // Limit width on very small screens
-                    maxWidth: {
-                      xs: '150px', // Limit width on mobile
-                      sm: 'none', // No limit on larger screens
-                    },
-                  }}
-                  component={logo ? 'span' : Link}
-                  {...(logo ? {} : { href: logoHref, onClick: handleLogoClick })}
-                >
-                  {wordmark}
-                </Typography>
-              )}
+              {brand}
             </Box>
 
             {/* Navigation Zone - Primary Navigation (Desktop Only) */}
