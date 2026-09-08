@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseVOSpaceXML } from './parseVOSpaceXML';
+import { parseVOSpaceXML, vosHomeUriToSessionPath } from './parseVOSpaceXML';
 
 /**
  * Real-world fragment shape: a home-directory node with a non-zero
@@ -48,6 +48,25 @@ function xmlNoChildren(): string {
 </vos:node>`;
 }
 
+describe('vosHomeUriToSessionPath', () => {
+  it('maps CANFAR ARC home URIs to /arc/home/username', () => {
+    expect(vosHomeUriToSessionPath('vos://cadc.nrc.ca~arc/home/brars')).toBe('/arc/home/brars');
+  });
+
+  it('maps SRC Cavern home URIs to /cavern/home/username', () => {
+    expect(vosHomeUriToSessionPath('vos://canfar.net~src~cavern/home/szautkin')).toBe(
+      '/cavern/home/szautkin',
+    );
+    expect(vosHomeUriToSessionPath('vos://canfar.net~staging-src~cavern/home/szautkin')).toBe(
+      '/cavern/home/szautkin',
+    );
+  });
+
+  it('returns null for malformed URIs', () => {
+    expect(vosHomeUriToSessionPath('not-a-uri')).toBeNull();
+  });
+});
+
 describe('parseVOSpaceXML', () => {
   it('reads root size/quota/date when the XML has no children section (prod-like)', () => {
     const result = parseVOSpaceXML(xmlNoChildren());
@@ -55,6 +74,7 @@ describe('parseVOSpaceXML', () => {
     expect(result.quota).toBe(QUOTA);
     expect(result.date).toBe('2026-05-22T12:34:56.000Z');
     expect(result.usage).toBeCloseTo((ROOT_LENGTH / QUOTA) * 100, 6);
+    expect(result.path).toBe('/cavern/home/szautkin');
   });
 
   it('reads the root aggregate, not a child leaf, when children are expanded (staging-like)', () => {
@@ -67,6 +87,7 @@ describe('parseVOSpaceXML', () => {
     expect(result.size).not.toBe(CHILD_LENGTH_LAST);
     expect(result.quota).toBe(QUOTA);
     expect(result.usage).toBeCloseTo((ROOT_LENGTH / QUOTA) * 100, 6);
+    expect(result.path).toBe('/cavern/home/szautkin');
   });
 
   it('returns zeros when the XML has no length/quota properties', () => {

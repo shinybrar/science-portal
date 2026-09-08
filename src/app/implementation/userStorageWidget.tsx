@@ -21,31 +21,11 @@ import {
   StorageData,
 } from '@/app/types/UserStorageWidgetProps';
 import { tokens } from '@/app/design-system/tokens';
+import { formatRelativeToNow } from '@/lib/utils/relative-time';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import updateLocale from 'dayjs/plugin/updateLocale';
 
 dayjs.extend(utc);
-dayjs.extend(relativeTime);
-dayjs.extend(updateLocale);
-dayjs.updateLocale('en', {
-  relativeTime: {
-    future: 'in %s',
-    past: '%s ago',
-    s: 'a few seconds',
-    m: 'a min',
-    mm: '%d mins',
-    h: 'an hr',
-    hh: '%d hrs',
-    d: 'a day',
-    dd: '%d days',
-    M: 'a month',
-    MM: '%d months',
-    y: 'a year',
-    yy: '%d years',
-  },
-});
 
 const RING_SIZE = 32;
 const RING_STROKE = 5;
@@ -123,11 +103,17 @@ const formatStorageDateLocalDefault = (raw: string): string => {
 const formatRelativeStorageModified = (raw: string, nowMs: number): string => {
   const instant = parseStorageApiUtc(raw);
   if (!instant) return 'Unknown';
-  return instant.from(dayjs(nowMs));
+  return formatRelativeToNow(instant.valueOf(), nowMs);
 };
 
 const USAGE_WARN_PCT = 70;
 const USAGE_CRITICAL_PCT = 90;
+
+function displayStoragePath(path: string): string {
+  const trimmed = path.trim();
+  if (!trimmed) return '';
+  return trimmed.endsWith('/') ? trimmed : `${trimmed}/`;
+}
 
 function usageFillColor(usage: number, theme: Theme) {
   if (usage > USAGE_CRITICAL_PCT) return theme.palette.error.main;
@@ -218,29 +204,25 @@ function StorageRing({
   );
 }
 
-export type StorageSummaryBodyProps = {
+type StorageDetailsPanelProps = {
   isLoading?: boolean;
   data?: StorageData | null;
   emptyMessage?: string;
-  warningThreshold?: number;
   dateFormatter?: (date: string) => string;
   fileSizeFormatter?: (bytes: number) => string;
-  fillHeight?: boolean;
 };
 
-export function StorageDetailsPanel({
+function StorageDetailsPanel({
   isLoading = false,
   data = null,
   emptyMessage = 'No storage data available',
   dateFormatter = formatStorageDateLocalDefault,
   fileSizeFormatter = convertToFileSize,
-  title,
   onClose,
   onRefresh,
   isFetching = false,
   errorMessage,
-}: StorageSummaryBodyProps & {
-  title?: string;
+}: StorageDetailsPanelProps & {
   onClose?: () => void;
   onRefresh?: () => void;
   isFetching?: boolean;
@@ -254,6 +236,7 @@ export function StorageDetailsPanel({
   const trackColor =
     theme.palette.mode === 'dark' ? theme.palette.grey[700] : theme.palette.grey[300];
   const usedPct = Math.min(100, Math.max(0, usage));
+  const pathLabel = displayData?.path ? displayStoragePath(displayData.path) : null;
 
   const sizeTotalsModifiedAbsolute = useMemo(() => {
     return displayData?.date ? dateFormatter(displayData.date) : null;
@@ -272,40 +255,64 @@ export function StorageDetailsPanel({
 
   return (
     <Box sx={{ width: '100%', maxWidth: 320, p: 2 }}>
-      {(title || onClose || onRefresh) && (
+      {(pathLabel || onClose || onRefresh) && (
         <Box
           sx={{
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             justifyContent: 'space-between',
-            mb: 1.5,
             gap: 1,
+            mb: 1.25,
           }}
         >
-          <Typography variant="subtitle1" sx={{ fontWeight: 600, letterSpacing: '-0.02em' }}>
-            {title ?? 'Home Storage'}
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {onRefresh && (
-              <Tooltip title="Refresh storage">
-                <span>
-                  <IconButton
-                    size="small"
-                    onClick={onRefresh}
-                    disabled={isLoading || isFetching}
-                    aria-label="refresh storage"
-                  >
-                    <RefreshIcon fontSize="small" />
-                  </IconButton>
-                </span>
-              </Tooltip>
-            )}
-            {onClose && (
-              <IconButton size="small" onClick={onClose} aria-label="close storage details">
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            )}
-          </Box>
+          {isLoading ? (
+            <Skeleton width="75%" height={20} sx={{ flex: 1 }} />
+          ) : pathLabel ? (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ minWidth: 0, flex: 1, wordBreak: 'break-all' }}
+            >
+              <Box component="span" sx={{ fontWeight: 600 }}>
+                Path:{' '}
+              </Box>
+              <Box
+                component="span"
+                sx={{
+                  fontFamily: tokens.typography.fontFamily.mono,
+                  fontWeight: 400,
+                  color: 'text.primary',
+                }}
+              >
+                {pathLabel}
+              </Box>
+            </Typography>
+          ) : (
+            <Box sx={{ flex: 1 }} />
+          )}
+          {(onClose || onRefresh) && (
+            <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+              {onRefresh && (
+                <Tooltip title="Refresh storage">
+                  <span>
+                    <IconButton
+                      size="small"
+                      onClick={onRefresh}
+                      disabled={isLoading || isFetching}
+                      aria-label="refresh storage"
+                    >
+                      <RefreshIcon fontSize="small" />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              )}
+              {onClose && (
+                <IconButton size="small" onClick={onClose} aria-label="close storage details">
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              )}
+            </Box>
+          )}
         </Box>
       )}
 
@@ -378,60 +385,50 @@ export function StorageDetailsPanel({
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: 2,
+              justifyContent: 'space-between',
+              gap: 1,
             }}
           >
-            {[
-              { key: 'used', label: 'Used', color: usedColor },
-              { key: 'available', label: 'Available', color: trackColor },
-            ].map((item) => (
-              <Box key={item.key} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                <Box
-                  sx={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: '2px',
-                    backgroundColor: item.color,
-                    flexShrink: 0,
-                  }}
-                />
-                <Typography variant="caption" color="text.secondary">
-                  {item.label}
-                </Typography>
-              </Box>
-            ))}
-          </Box>
-
-          {sizeTotalsModifiedRelative && sizeTotalsModifiedRelative !== 'Unknown' && !isLoading && (
-            <Box sx={{ mt: 1.5, color: 'text.secondary' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              {[
+                { key: 'used', label: 'Used', color: usedColor },
+                { key: 'available', label: 'Available', color: trackColor },
+              ].map((item) => (
+                <Box key={item.key} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                  <Box
+                    sx={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: '2px',
+                      backgroundColor: item.color,
+                      flexShrink: 0,
+                    }}
+                  />
+                  <Typography variant="caption" color="text.secondary">
+                    {item.label}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+            {sizeTotalsModifiedRelative && sizeTotalsModifiedRelative !== 'Unknown' && !isLoading && (
               <Tooltip
                 title={sizeTotalsModifiedAbsolute ? `${sizeTotalsModifiedAbsolute}` : 'Unknown'}
               >
-                <Typography variant="caption">
-                  Modified{' '}
-                  <Box
-                    component="span"
-                    sx={{
-                      fontWeight: 600,
-                      fontFamily: tokens.typography.fontFamily.mono,
-                      color: 'text.primary',
-                    }}
-                  >
-                    {sizeTotalsModifiedRelative}
-                  </Box>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  noWrap
+                  sx={{ flexShrink: 0, textAlign: 'right' }}
+                >
+                  Modified {sizeTotalsModifiedRelative}
                 </Typography>
               </Tooltip>
-            </Box>
-          )}
+            )}
+          </Box>
         </>
       )}
     </Box>
   );
-}
-
-/** Inline details used by the combined Usage panel. */
-export function StorageSummaryBody(props: StorageSummaryBodyProps) {
-  return <StorageDetailsPanel {...props} />;
 }
 
 export const UserStorageWidgetImpl = React.forwardRef<HTMLDivElement, UserStorageWidgetProps>(
@@ -539,7 +536,6 @@ export const UserStorageWidgetImpl = React.forwardRef<HTMLDivElement, UserStorag
           }}
         >
           <StorageDetailsPanel
-            title={title}
             isLoading={isLoading}
             isFetching={isFetching}
             data={data}

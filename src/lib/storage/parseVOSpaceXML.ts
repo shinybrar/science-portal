@@ -15,6 +15,32 @@ export interface StorageData {
   quota: number;
   date: string;
   usage: number;
+  /** Session mount path, e.g. `/arc/home/user/`. */
+  path?: string;
+}
+
+/**
+ * Map a VOSpace home node URI to the POSIX path mounted in Skaha sessions.
+ *
+ * Examples:
+ * - `vos://cadc.nrc.ca~arc/home/brars` → `/arc/home/brars`
+ * - `vos://canfar.net~src~cavern/home/szautkin` → `/cavern/home/szautkin`
+ */
+export function vosHomeUriToSessionPath(vosUri: string): string | null {
+  const match = vosUri.match(/^vos:\/\/([^/]+)\/(.+)$/);
+  if (!match) return null;
+
+  const authority = match[1];
+  const nodePath = match[2].replace(/\/+$/, '');
+  const mountRoot = authority.split('~').pop();
+  if (!mountRoot || !nodePath) return null;
+
+  return `/${mountRoot}/${nodePath}`;
+}
+
+function extractRootNodeUri(xmlText: string): string | null {
+  const match = xmlText.match(/<vos:node[^>]*\suri="([^"]+)"/);
+  return match?.[1] ?? null;
 }
 
 export function parseVOSpaceXML(xmlText: string): StorageData {
@@ -44,5 +70,7 @@ export function parseVOSpaceXML(xmlText: string): StorageData {
   }
 
   const usage = quota > 0 ? (size / quota) * 100 : 0;
-  return { size, quota, date, usage };
+  const rootUri = extractRootNodeUri(xmlText);
+  const path = rootUri ? vosHomeUriToSessionPath(rootUri) ?? undefined : undefined;
+  return { size, quota, date, usage, path };
 }
