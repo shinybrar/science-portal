@@ -21,6 +21,7 @@ import {
   Typography,
   Skeleton,
   Stack,
+  Checkbox,
 } from '@mui/material';
 import { HelpOutline as HelpOutlineIcon } from '@mui/icons-material';
 import { useQueryStates, parseAsString, parseAsInteger, createParser } from 'nuqs';
@@ -120,6 +121,140 @@ function TabPanel(props: TabPanelProps) {
     >
       {value === index && <Box sx={{ pt: theme.spacing(3) }}>{children}</Box>}
     </div>
+  );
+}
+
+function ResourceModeFields({
+  type,
+  isLoading,
+  options,
+  values,
+  onChange,
+}: {
+  type: 'flexible' | 'fixed';
+  isLoading: boolean;
+  options: {
+    memory: readonly number[];
+    cores: readonly number[];
+    gpus: readonly number[];
+  };
+  values: {
+    memory: number;
+    cores: number;
+    gpus: number;
+  };
+  onChange: {
+    type: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    memory: (value: number) => void;
+    cores: (value: number) => void;
+    gpus: (value: number) => void;
+  };
+}) {
+  const theme = useTheme();
+  const gpuChoices = options.gpus.filter((n) => n > 0);
+  const gpuEnabled = values.gpus > 0;
+
+  return (
+    <Grid container alignItems="flex-start" spacing={1}>
+      <Grid size={{ xs: 12, sm: 4 }}>
+        <FormLabel>resources</FormLabel>
+      </Grid>
+      <Grid size={{ xs: 12, sm: 8 }}>
+        <FormControl component="fieldset" sx={{ m: 0 }}>
+          <RadioGroup
+            row
+            value={type}
+            onChange={onChange.type}
+            sx={{ minHeight: 32, alignItems: 'center' }}
+          >
+            <FormControlLabel
+              value="flexible"
+              control={
+                <Radio
+                  size="small"
+                  sx={{
+                    p: 0.5,
+                    color: theme.palette.accent.main,
+                    '&.Mui-checked': { color: theme.palette.accent.main },
+                  }}
+                />
+              }
+              label="Flexible"
+              disabled={isLoading}
+              sx={{ mr: 1.5, ml: 0 }}
+            />
+            <FormControlLabel
+              value="fixed"
+              control={
+                <Radio
+                  size="small"
+                  sx={{
+                    p: 0.5,
+                    color: theme.palette.primary.dark,
+                    '&.Mui-checked': { color: theme.palette.primary.dark },
+                  }}
+                />
+              }
+              label="Fixed"
+              disabled={isLoading}
+              sx={{ mr: 0, ml: 0 }}
+            />
+          </RadioGroup>
+        </FormControl>
+        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0 }}>
+          {type === 'fixed'
+            ? 'This session keeps the CPU and memory you set.'
+            : 'Flexible resources allow dynamic allocation based on availability'}
+        </Typography>
+        {type === 'fixed' && (
+          <Stack spacing={0.5} sx={{ mt: 1 }}>
+            <ResourceField
+              label="Memory"
+              unit="GB"
+              value={values.memory}
+              options={options.memory}
+              onChange={onChange.memory}
+              disabled={isLoading}
+            />
+            <ResourceField
+              label="CPUs"
+              value={values.cores}
+              options={options.cores}
+              onChange={onChange.cores}
+              disabled={isLoading}
+            />
+            {gpuChoices.length > 0 && (
+              <>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      checked={gpuEnabled}
+                      onChange={(event) => {
+                        onChange.gpus(event.target.checked ? (gpuChoices[0] ?? 1) : 0);
+                      }}
+                      disabled={isLoading}
+                      sx={{ p: 0.5 }}
+                    />
+                  }
+                  label="Request a GPU"
+                  sx={{ alignSelf: 'flex-start', mx: 0, my: 0 }}
+                />
+                {gpuEnabled && gpuChoices.length > 1 && (
+                  <ResourceField
+                    label="GPU"
+                    value={values.gpus}
+                    options={gpuChoices}
+                    onChange={onChange.gpus}
+                    disabled={isLoading}
+                  />
+                )}
+              </>
+            )}
+          </Stack>
+        )}
+      </Grid>
+    </Grid>
   );
 }
 
@@ -740,8 +875,6 @@ export const SessionLaunchFormImpl = React.forwardRef<HTMLDivElement, SessionLau
       }
     };
 
-    // One handler per resource field. Stable refs across renders so a memoized
-    // ResourceField bails out when the *other* fields change.
     const handleMemoryChange = useCallback(
       (value: number) => {
         setIsFormDirty(true);
@@ -781,6 +914,29 @@ export const SessionLaunchFormImpl = React.forwardRef<HTMLDivElement, SessionLau
         />
       </Tooltip>
     );
+
+    const resourceModeFields = supportsResourceConfig ? (
+      <ResourceModeFields
+        type={resourceType}
+        isLoading={isLoading}
+        options={{
+          memory: memoryOptions?.length ? memoryOptions : DEFAULT_MEMORY_OPTIONS,
+          cores: coreOptions?.length ? coreOptions : DEFAULT_CORE_OPTIONS,
+          gpus: gpuOptions?.length ? gpuOptions : [0],
+        }}
+        values={{
+          memory: formData.memory,
+          cores: formData.cores,
+          gpus: formData.gpus || 0,
+        }}
+        onChange={{
+          type: handleResourceTypeChange,
+          memory: handleMemoryChange,
+          cores: handleCoresChange,
+          gpus: handleGpusChange,
+        }}
+      />
+    ) : null;
 
     return (
       <Card ref={ref} elevation={0}>
@@ -1155,85 +1311,7 @@ export const SessionLaunchFormImpl = React.forwardRef<HTMLDivElement, SessionLau
                     </Grid>
                   </Grid>
 
-                  {/* Resources field - only show for session types that support it */}
-                  {supportsResourceConfig && (
-                    <Grid container alignItems="center" spacing={1}>
-                      <Grid size={{ xs: 12, sm: 4 }}>
-                        <FormLabel>resources</FormLabel>
-                      </Grid>
-                      <Grid size={{ xs: 12, sm: 8 }}>
-                        <FormControl component="fieldset">
-                          <RadioGroup row value={resourceType} onChange={handleResourceTypeChange}>
-                            <FormControlLabel
-                              value="flexible"
-                              control={<Radio size="small" />}
-                              label="Flexible"
-                              disabled={isLoading}
-                              sx={{ mr: 1 }}
-                            />
-                            <HelpIcon title="Flexible resources allow dynamic allocation based on availability" />
-                            <FormControlLabel
-                              value="fixed"
-                              control={<Radio size="small" />}
-                              label="Fixed"
-                              disabled={isLoading}
-                              sx={{ ml: 2, mr: 1 }}
-                            />
-                            <HelpIcon title="Fixed resources guarantee specific CPU and memory allocation" />
-                          </RadioGroup>
-                        </FormControl>
-                      </Grid>
-                    </Grid>
-                  )}
-
-                  {/* Conditional Memory, CPU, and GPU fields when Fixed is selected and supported */}
-                  {supportsResourceConfig && resourceType === 'fixed' && (
-                    <Grid container alignItems="flex-start" spacing={2}>
-                      <Grid size={{ xs: 12, sm: 4 }}>{/* Empty grid for alignment */}</Grid>
-                      <Grid size={{ xs: 12, sm: 8 }}>
-                        <Grid container spacing={2}>
-                          <Grid size={{ xs: 12, sm: 4 }}>
-                            <ResourceField
-                              label="Memory (GB)"
-                              value={formData.memory}
-                              min={(memoryOptions || DEFAULT_MEMORY_OPTIONS)[0] ?? 1}
-                              max={
-                                (memoryOptions || DEFAULT_MEMORY_OPTIONS)[
-                                  (memoryOptions || DEFAULT_MEMORY_OPTIONS).length - 1
-                                ]
-                              }
-                              onChange={handleMemoryChange}
-                              disabled={isLoading}
-                            />
-                          </Grid>
-                          <Grid size={{ xs: 12, sm: 4 }}>
-                            <ResourceField
-                              label="CPU Cores"
-                              value={formData.cores}
-                              min={(coreOptions || DEFAULT_CORE_OPTIONS)[0] ?? 1}
-                              max={
-                                (coreOptions || DEFAULT_CORE_OPTIONS)[
-                                  (coreOptions || DEFAULT_CORE_OPTIONS).length - 1
-                                ]
-                              }
-                              onChange={handleCoresChange}
-                              disabled={isLoading}
-                            />
-                          </Grid>
-                          <Grid size={{ xs: 12, sm: 4 }}>
-                            <ResourceField
-                              label="GPU"
-                              value={formData.gpus || 0}
-                              min={0}
-                              max={(gpuOptions || [0])[(gpuOptions || [0]).length - 1] ?? 0}
-                              onChange={handleGpusChange}
-                              disabled={isLoading}
-                            />
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  )}
+                  {resourceModeFields}
                 </Box>
 
                 {/* Buttons */}
@@ -1457,91 +1535,7 @@ export const SessionLaunchFormImpl = React.forwardRef<HTMLDivElement, SessionLau
                         </Grid>
                       </Grid>
 
-                      {/* Resources field - only show for session types that support it */}
-                      {supportsResourceConfig && (
-                        <>
-                          <Grid container alignItems="center" spacing={1} sx={{ mb: 2 }}>
-                            <Grid size={{ xs: 12, sm: 4 }}>
-                              <FormLabel>resources</FormLabel>
-                            </Grid>
-                            <Grid size={{ xs: 12, sm: 8 }}>
-                              <FormControl component="fieldset">
-                                <RadioGroup
-                                  row
-                                  value={resourceType}
-                                  onChange={handleResourceTypeChange}
-                                >
-                                  <FormControlLabel
-                                    value="flexible"
-                                    control={<Radio size="small" />}
-                                    label="Flexible"
-                                    disabled={isLoading}
-                                    sx={{ mr: 1 }}
-                                  />
-                                  <HelpIcon title="Flexible resources allow dynamic allocation based on availability" />
-                                  <FormControlLabel
-                                    value="fixed"
-                                    control={<Radio size="small" />}
-                                    label="Fixed"
-                                    disabled={isLoading}
-                                    sx={{ ml: 2, mr: 1 }}
-                                  />
-                                  <HelpIcon title="Fixed resources guarantee specific CPU and memory allocation" />
-                                </RadioGroup>
-                              </FormControl>
-                            </Grid>
-                          </Grid>
-
-                          {/* Conditional Memory, CPU, and GPU fields when Fixed is selected */}
-                          {resourceType === 'fixed' && (
-                            <Grid container alignItems="flex-start" spacing={2}>
-                              <Grid size={{ xs: 12, sm: 4 }}>{/* Empty grid for alignment */}</Grid>
-                              <Grid size={{ xs: 12, sm: 8 }}>
-                                <Grid container spacing={2}>
-                                  <Grid size={{ xs: 12, sm: 4 }}>
-                                    <ResourceField
-                                      label="Memory (GB)"
-                                      value={formData.memory}
-                                      min={(memoryOptions || DEFAULT_MEMORY_OPTIONS)[0] ?? 1}
-                                      max={
-                                        (memoryOptions || DEFAULT_MEMORY_OPTIONS)[
-                                          (memoryOptions || DEFAULT_MEMORY_OPTIONS).length - 1
-                                        ]
-                                      }
-                                      onChange={handleMemoryChange}
-                                      disabled={isLoading}
-                                    />
-                                  </Grid>
-                                  <Grid size={{ xs: 12, sm: 4 }}>
-                                    <ResourceField
-                                      label="CPU Cores"
-                                      value={formData.cores}
-                                      min={(coreOptions || DEFAULT_CORE_OPTIONS)[0] ?? 1}
-                                      max={
-                                        (coreOptions || DEFAULT_CORE_OPTIONS)[
-                                          (coreOptions || DEFAULT_CORE_OPTIONS).length - 1
-                                        ]
-                                      }
-                                      onChange={handleCoresChange}
-                                      disabled={isLoading}
-                                    />
-                                  </Grid>
-                                  <Grid size={{ xs: 12, sm: 4 }}>
-                                    <ResourceField
-                                      label="GPU"
-                                      value={formData.gpus || 0}
-                                      min={0}
-                                      max={(gpuOptions || [0])[(gpuOptions || [0]).length - 1] ?? 0}
-                                      onChange={handleGpusChange}
-                                      disabled={isLoading}
-                                    />
-                                  </Grid>
-                                </Grid>
-                              </Grid>
-                            </Grid>
-                          )}
-                        </>
-                      )}
+                      {resourceModeFields}
                     </Box>
                   </Box>
 

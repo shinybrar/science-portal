@@ -1,10 +1,8 @@
 export interface ResourceFieldProps {
   label: string;
   value: number;
-  min: number;
-  max: number;
-  step?: number;
-  /** Fires only when the value is committed (slider release or input commit). */
+  options: readonly number[];
+  unit?: string;
   onChange: (value: number) => void;
   disabled?: boolean;
 }

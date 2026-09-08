@@ -9,8 +9,8 @@ export const DEFAULT_CORES_NUMBER = 1;
 export const DEFAULT_RAM_NUMBER = 1;
 export const DEFAULT_GPU_NUMBER = 0;
 
-// Fallback option lists for the resource sliders / stepper buttons when the
-// Skaha `context` endpoint doesn't supply them. Used by the launch form.
+// Fallback option lists for the resource sliders when the Skaha `context`
+// endpoint doesn't supply them. Used by the launch form.
 export const DEFAULT_MEMORY_OPTIONS = [
   1, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 26, 28, 30, 32, 36, 40, 44, 48, 56, 64, 80, 92, 112, 128,
   140, 170, 192,
