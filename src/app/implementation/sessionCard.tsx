@@ -27,12 +27,13 @@ import React, { useEffect, useState } from 'react';
 import { alpha, type Theme } from '@mui/material/styles';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-
-dayjs.extend(utc);
+import { formatRelativeToNow } from '@/lib/utils/relative-time';
 import { usePublicRuntimeConfig } from '@/lib/providers/PublicRuntimeConfigProvider';
 import Image from 'next/image';
 import { useSessionModalsActions } from '@/lib/stores';
 import { hasAssignedSessionId } from '@/lib/sessions/sessionQuota';
+
+dayjs.extend(utc);
 
 const ICON_SIZE = 22;
 
@@ -201,12 +202,11 @@ const stripMemoryUnit = (value: string | undefined): string => {
   return value.replace(/[KMGT]B?$/, '');
 };
 
-/** Parse Skaha session timestamps as UTC instants (ISO `Z` or naive UTC). */
 const parseSessionUtc = (raw: string): dayjs.Dayjs | null => {
-  const s = raw?.trim();
-  if (!s) return null;
-  const d = /[zZ]$|[+-]\d{2}:?\d{2}$/.test(s) ? dayjs(s) : dayjs.utc(s);
-  return d.isValid() ? d : null;
+  const trimmed = raw?.trim();
+  if (!trimmed) return null;
+  const instant = dayjs.utc(trimmed);
+  return instant.isValid() ? instant : null;
 };
 
 const formatSessionDateLocal = (raw: string): string => {
@@ -223,45 +223,16 @@ const formatSessionDateLocal = (raw: string): string => {
   }).format(instant.toDate());
 };
 
-const relativeTimeFormatter = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
-
-function formatRelativeToNow(instant: dayjs.Dayjs, nowMs: number): string {
-  const diffSec = Math.round((instant.valueOf() - nowMs) / 1000);
-  const abs = Math.abs(diffSec);
-  let value: number;
-  let unit: Intl.RelativeTimeFormatUnit;
-  if (abs < 60) {
-    value = diffSec === 0 ? 0 : diffSec;
-    unit = 'second';
-  } else if (abs < 3600) {
-    value = Math.round(diffSec / 60);
-    unit = 'minute';
-  } else if (abs < 86400) {
-    value = Math.round(diffSec / 3600);
-    unit = 'hour';
-  } else if (abs < 86400 * 30) {
-    value = Math.round(diffSec / 86400);
-    unit = 'day';
-  } else if (abs < 86400 * 365) {
-    value = Math.round(diffSec / (86400 * 30));
-    unit = 'month';
-  } else {
-    value = Math.round(diffSec / (86400 * 365));
-    unit = 'year';
-  }
-  return relativeTimeFormatter.format(value, unit);
-}
-
 const formatStartedRelative = (raw: string, nowMs: number): string => {
   const instant = parseSessionUtc(raw);
   if (!instant) return 'Pending...';
-  return `Started ${formatRelativeToNow(instant, nowMs)}`;
+  return `Started ${formatRelativeToNow(instant.valueOf(), nowMs)}`;
 };
 
 const formatExpiresRelative = (raw: string, nowMs: number): string => {
   const instant = parseSessionUtc(raw);
   if (!instant) return 'Pending...';
-  const relative = formatRelativeToNow(instant, nowMs);
+  const relative = formatRelativeToNow(instant.valueOf(), nowMs);
   return instant.valueOf() > nowMs ? `Expires ${relative}` : `Expired ${relative}`;
 };
 
