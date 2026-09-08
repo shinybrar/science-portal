@@ -8,12 +8,10 @@ import { tokens } from '../design-system/tokens';
 
 declare module '@mui/material/styles' {
   interface Palette {
-    tertiary: PaletteColor;
     accent: PaletteColor;
   }
 
   interface PaletteOptions {
-    tertiary?: PaletteColorOptions;
     accent?: PaletteColorOptions;
   }
 
@@ -131,22 +129,6 @@ export const createTheme = (mode: ThemeMode, overrides?: ThemeOptions) => {
         700: tokens.colors.secondary[700],
         800: tokens.colors.secondary[800],
         900: tokens.colors.secondary[900],
-      },
-      tertiary: {
-        main: tokens.colors.tertiary[500],
-        light: tokens.colors.tertiary[300],
-        dark: tokens.colors.tertiary[700],
-        contrastText: tokens.colors.text.onAccent, // Navy on UVic sky blue
-        50: tokens.colors.tertiary[50],
-        100: tokens.colors.tertiary[100],
-        200: tokens.colors.tertiary[200],
-        300: tokens.colors.tertiary[300],
-        400: tokens.colors.tertiary[400],
-        500: tokens.colors.tertiary[500],
-        600: tokens.colors.tertiary[600],
-        700: tokens.colors.tertiary[700],
-        800: tokens.colors.tertiary[800],
-        900: tokens.colors.tertiary[900],
       },
       accent: {
         main: tokens.colors.accent[500],

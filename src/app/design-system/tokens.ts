@@ -44,18 +44,6 @@ export const tokens = {
       white: '#ffffff',
       black: '#000000',
     },
-    tertiary: {
-      50: '#f0f9fd',
-      100: '#bee7f9',
-      200: '#8ad0f0',
-      300: '#57b7e7',
-      400: '#3aa6dc',
-      500: '#57b7e7',
-      600: '#2a8fbe',
-      700: '#1e6f96',
-      800: '#15506c',
-      900: '#0c3345',
-    },
     accent: {
       50: '#fff8e6',
       100: '#ffecb8',
