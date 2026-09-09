@@ -8,6 +8,8 @@ export interface ActiveSessionsWidgetProps {
   isLoading?: boolean;
   /** Background refetch — keeps content, only animates the status bar. */
   isFetching?: boolean;
+  /** Fetch error; rendered by DashboardWidget. Distinct from the empty list. */
+  errorMessage?: string;
   onRefresh?: () => void;
   title?: string;
   showSessionCount?: boolean;

@@ -32,7 +32,7 @@ export interface UserStorageWidgetProps {
   isFetching?: boolean;
   /** Storage data to display */
   data?: StorageData | null;
-  /** Error message to display */
+  /** Fetch error; rendered by DashboardWidget. Distinct from the empty state. */
   errorMessage?: string;
   /** Callback for refresh button */
   onRefresh?: () => void;

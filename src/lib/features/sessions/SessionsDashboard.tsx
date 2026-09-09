@@ -27,6 +27,7 @@ import {
 } from '@/lib/config/site-config';
 import { useOperatingSessionIds, useSessionUiActions } from '@/lib/stores';
 import { SessionModalsHost } from '@/lib/features/sessions/SessionModalsHost';
+import { joinQueryErrors, queryErrorMessage } from '@/lib/query/query-result';
 
 export function SessionsDashboard() {
   const theme = useTheme();
@@ -47,6 +48,7 @@ export function SessionsDashboard() {
     data: sessions = [],
     isLoading: isLoadingSessionsQuery,
     isFetching: isFetchingSessions,
+    error: sessionsError,
     refetch: refetchSessions,
   } = useSessions(isAuthenticated);
 
@@ -54,6 +56,7 @@ export function SessionsDashboard() {
     data: imagesByType = {},
     isLoading: isLoadingImages,
     isFetching: isFetchingImages,
+    error: imagesError,
     refetch: refetchImages,
   } = useContainerImages(isAuthenticated);
 
@@ -61,6 +64,7 @@ export function SessionsDashboard() {
     data: imageRepositories = [],
     isLoading: isLoadingRepositories,
     isFetching: isFetchingRepositories,
+    error: repositoriesError,
     refetch: refetchRepositories,
   } = useImageRepositories(isAuthenticated);
 
@@ -68,6 +72,7 @@ export function SessionsDashboard() {
     data: context,
     isLoading: isLoadingContext,
     isFetching: isFetchingContext,
+    error: contextError,
     refetch: refetchContext,
   } = useContext(isAuthenticated);
 
@@ -79,6 +84,10 @@ export function SessionsDashboard() {
     error: storageError,
     refetch: refetchStorage,
   } = useUserStorageSummary(username, isAuthenticated);
+
+  const sessionsErrorMessage = queryErrorMessage(sessionsError);
+  const storageErrorMessage = queryErrorMessage(storageError);
+  const launchFormErrorMessage = joinQueryErrors([imagesError, repositoriesError, contextError]);
 
   const { mutateAsync: launchSessionAsync } = useLaunchSession();
 
@@ -233,6 +242,7 @@ export function SessionsDashboard() {
                     operatingSessionIds={operatingSessionIds}
                     isLoading={isLoadingSessions}
                     isFetching={isAuthenticated && isFetchingSessions}
+                    errorMessage={sessionsErrorMessage}
                     onRefresh={handleSessionsRefresh}
                     fillHeight={isDesktopTopRow}
                   />
@@ -251,7 +261,7 @@ export function SessionsDashboard() {
                     data={storageSummary ?? null}
                     isLoading={isLoadingUserStorage}
                     isFetching={isAuthenticated && isFetchingStorageSummary}
-                    errorMessage={storageError?.message}
+                    errorMessage={storageErrorMessage}
                     onRefresh={handleStorageRefresh}
                     fillHeight={isDesktopTopRow}
                   />
@@ -281,6 +291,7 @@ export function SessionsDashboard() {
                       .filter((host): host is string => Boolean(host))}
                     isLoading={isLoadingLaunchForm}
                     isFetching={isFetchingLaunchForm}
+                    errorMessage={launchFormErrorMessage}
                     onRefresh={handleLaunchFormRefresh}
                     activeSessions={sessions}
                     launchSessionFn={handleLaunchSession}

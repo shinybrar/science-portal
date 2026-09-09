@@ -6,6 +6,7 @@
  */
 
 import { getAuthHeader } from '@/lib/auth/token-storage';
+import { throwIfNotOk } from '@/lib/api/http-error';
 import { buildApiRoutes } from '@/lib/config/api';
 import { getRuntimeBasePath } from '@/lib/config/runtime-public-snapshot';
 
@@ -48,9 +49,7 @@ export async function getUserStorageQuota(username: string): Promise<UserStorage
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch storage quota: ${response.status}`);
-  }
+  await throwIfNotOk(response, 'Failed to fetch storage quota');
 
   return response.json();
 }
@@ -67,9 +66,7 @@ export async function getUserStorageSummary(username: string): Promise<UserStora
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch storage summary: ${response.status}`);
-  }
+  await throwIfNotOk(response, 'Failed to fetch storage summary');
 
   return response.json();
 }
@@ -89,9 +86,7 @@ export async function listStorageNodes(
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to list storage nodes: ${response.status}`);
-  }
+  await throwIfNotOk(response, 'Failed to list storage nodes');
 
   return response.json();
 }
@@ -112,9 +107,7 @@ export async function uploadFile(username: string, path: string, file: File): Pr
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to upload file: ${response.status}`);
-  }
+  await throwIfNotOk(response, 'Failed to upload file');
 }
 
 /**
@@ -129,9 +122,7 @@ export async function deleteStorageNode(username: string, path: string): Promise
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to delete storage node: ${response.status}`);
-  }
+  await throwIfNotOk(response, 'Failed to delete storage node');
 }
 
 /**
@@ -151,7 +142,5 @@ export async function createDirectory(username: string, path: string): Promise<v
     body: JSON.stringify({ type: 'directory' }),
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to create directory: ${response.status}`);
-  }
+  await throwIfNotOk(response, 'Failed to create directory');
 }

@@ -271,7 +271,7 @@ export const UserStorageWidgetImpl = React.forwardRef<HTMLDivElement, UserStorag
         maxWidth={600}
       >
         {/* Storage Cards or Empty State */}
-        {!displayData && !isLoading ? (
+        {!displayData && !isLoading && !errorMessage ? (
           <Box
             sx={{
               flex: fillHeight ? 1 : undefined,

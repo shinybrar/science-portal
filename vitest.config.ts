@@ -11,6 +11,6 @@ export default defineConfig({
     environment: 'node',
     globals: true, // pre-existing image-parser.test.ts uses jest-style globals
     setupFiles: ['./vitest.setup.ts'],
-    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'dev/mock-upstream/**/*.test.mjs'],
   },
 });
