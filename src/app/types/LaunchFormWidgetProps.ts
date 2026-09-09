@@ -6,6 +6,11 @@ export interface LaunchFormWidgetProps extends SessionLaunchFormProps {
   isLoading?: boolean;
   /** Background refetch — keeps the form, only animates the status bar. */
   isFetching?: boolean;
+  /**
+   * Catalog fetch error (images / repositories / context). Shown on the widget
+   * shell — not the same as a launch-mutation error in SessionRequestModal.
+   */
+  errorMessage?: string | null;
   onRefresh?: () => void;
   title?: string;
   showProgressIndicator?: boolean;

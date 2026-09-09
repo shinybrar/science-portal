@@ -11,7 +11,7 @@ Developer reference for the Science Portal. Architectural rationale and decision
 | If the state is… | Use | Example |
 |------------------|-----|---------|
 | From an API / async | **TanStack Query** | Session list, file listing, quota |
-| Auth identity (OIDC) | **NextAuth** via `useAuthStatus()` | Logged-in user, gating queries |
+| Auth identity (OIDC) | **NextAuth** via `useAuthStatus()` | Logged-in user, gating queries — see [auth-session-authorization.md](./auth-session-authorization.md) (`authenticated` ≠ APIs will succeed) |
 | Deploy-time config | **React Context** | `useCanfar`, `serviceUrls`, `basePath` |
 | Bookmarkable / shareable | **nuqs** | File path `?path=`, session filters |
 | Cross-route UI, not in URL | **Zustand** | Upload queue, auth modals, multi-select |

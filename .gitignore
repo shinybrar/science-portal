@@ -35,6 +35,9 @@ pnpm-debug.log*
 .env.production
 .env.development
 
+# Local mock-upstream overlay (keep the example; ignore a copied .env.mock)
+.env.mock
+
 # Docker Compose files with secrets (use .example versions)
 docker-compose.canfar.yml
 docker-compose.dev.canfar.yml

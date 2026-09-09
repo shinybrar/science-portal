@@ -59,7 +59,8 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
   );
 
   if (!response.ok) {
-    return errorResponse('Failed to fetch container images', response.status);
+    const errorText = await response.text().catch(() => '');
+    return errorResponse('Failed to fetch container images', response.status, errorText);
   }
 
   const rawImages: RawImage[] = await response.json();

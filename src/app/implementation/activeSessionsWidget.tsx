@@ -52,6 +52,7 @@ export function ActiveSessionsWidgetImpl({
   operatingSessionIds = EMPTY_OPERATING_IDS,
   isLoading = false,
   isFetching = false,
+  errorMessage,
   onRefresh,
   title = 'Active Sessions',
   showSessionCount = true,
@@ -95,6 +96,7 @@ export function ActiveSessionsWidgetImpl({
       title={displayTitle}
       isLoading={isLoading}
       isFetching={isFetching}
+      error={errorMessage}
       onRefresh={onRefresh}
       fillHeight={fillHeight}
     >
@@ -117,7 +119,23 @@ export function ActiveSessionsWidgetImpl({
             />
           ))}
         </Box>
-      ) : sessions.length === 0 ? (
+      ) : sessions.length > 0 ? (
+        <>
+          <Box sx={sessionsLayoutSx}>
+            {sessionsToDisplay.map((session, index) => renderSessionCard(session, index))}
+          </Box>
+          {hasMoreSessions && (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              sx={{ pt: 1, flexShrink: 0 }}
+            >
+              And {sessions.length - maxSessionsToShow} more...
+            </Typography>
+          )}
+        </>
+      ) : errorMessage ? null : (
         <Card
           elevation={0}
           variant="outlined"
@@ -162,22 +180,6 @@ export function ActiveSessionsWidgetImpl({
             </Typography>
           </CardContent>
         </Card>
-      ) : (
-        <>
-          <Box sx={sessionsLayoutSx}>
-            {sessionsToDisplay.map((session, index) => renderSessionCard(session, index))}
-          </Box>
-          {hasMoreSessions && (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              align="center"
-              sx={{ pt: 1, flexShrink: 0 }}
-            >
-              And {sessions.length - maxSessionsToShow} more...
-            </Typography>
-          )}
-        </>
       )}
     </DashboardWidget>
   );
