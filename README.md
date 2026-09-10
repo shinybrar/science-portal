@@ -313,3 +313,4 @@ For deployment mode details (CANFAR vs OIDC), refer to [DEPLOYMENT-MODES.md](./h
 ## License
 
 This project is part of the [OpenCADC](https://github.com/opencadc) initiative and is licensed under GPL-3.0.
+
