@@ -16,6 +16,7 @@ export interface UserStorageWidgetProps {
   isLoading?: boolean;
   isFetching?: boolean;
   data?: StorageData | null;
+  /** Fetch error; shown in the storage popover / ring. Distinct from the empty state. */
   errorMessage?: string;
   onRefresh?: () => void;
   showRefreshButton?: boolean;

@@ -7,6 +7,7 @@
  */
 
 import { getAuthHeader } from '@/lib/auth/token-storage';
+import { errorFromPortalResponse, throwIfNotOk } from '@/lib/api/http-error';
 import type { ImagesByTypeAndProject } from '@/lib/utils/image-parser';
 import { getRuntimeBasePath } from '@/lib/config/runtime-public-snapshot';
 
@@ -198,9 +199,7 @@ export async function getSessions(): Promise<Session[]> {
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch sessions: ${response.status}`);
-  }
+  await throwIfNotOk(response, 'Failed to fetch sessions');
 
   const skahaResponse: SkahaSessionResponse[] = await response.json();
   return skahaResponse.map(transformSkahaSession);
@@ -217,9 +216,7 @@ export async function getSession(sessionId: string): Promise<Session> {
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch session ${sessionId}: ${response.status}`);
-  }
+  await throwIfNotOk(response, `Failed to fetch session ${sessionId}`);
 
   const skahaResponse: SkahaSessionResponse = await response.json();
   return transformSkahaSession(skahaResponse);
@@ -242,23 +239,7 @@ export async function launchSession(params: SessionLaunchParams): Promise<Sessio
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-
-    // Try to parse the error as JSON to extract a clean message
-    try {
-      const errorJson = JSON.parse(errorText);
-      // Prefer details, then message, then error field
-      const errorMessage =
-        errorJson.details?.trim() || errorJson.message || errorJson.error || errorText;
-      throw new Error(errorMessage);
-    } catch (parseError) {
-      // If JSON parsing fails (and it's not our thrown Error), use the raw text
-      if (parseError instanceof Error && parseError.message !== errorText) {
-        throw new Error(errorText || `Failed to launch session: ${response.status}`);
-      }
-      // Re-throw our clean error message
-      throw parseError;
-    }
+    throw await errorFromPortalResponse(response, 'Failed to launch session');
   }
 
   const result = await response.json();
@@ -296,9 +277,7 @@ export async function deleteSession(sessionId: string): Promise<void> {
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to delete session ${sessionId}: ${response.status}`);
-  }
+  await throwIfNotOk(response, `Failed to delete session ${sessionId}`);
 }
 
 /**
@@ -312,9 +291,7 @@ export async function getContainerImages(): Promise<ImagesByTypeAndProject> {
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch container images: ${response.status}`);
-  }
+  await throwIfNotOk(response, 'Failed to fetch container images');
 
   return response.json();
 }
@@ -330,9 +307,7 @@ export async function getImageRepositories(): Promise<ImageRepository[]> {
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch image repositories: ${response.status}`);
-  }
+  await throwIfNotOk(response, 'Failed to fetch image repositories');
 
   return response.json();
 }
@@ -348,9 +323,7 @@ export async function getContext(): Promise<ContextResponse> {
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch context: ${response.status}`);
-  }
+  await throwIfNotOk(response, 'Failed to fetch context');
 
   return response.json();
 }
@@ -366,9 +339,7 @@ export async function getSessionLogs(sessionId: string): Promise<string> {
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch logs for session ${sessionId}: ${response.status}`);
-  }
+  await throwIfNotOk(response, `Failed to fetch logs for session ${sessionId}`);
 
   return response.text();
 }
@@ -384,9 +355,7 @@ export async function getSessionEvents(sessionId: string): Promise<string> {
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch events for session ${sessionId}: ${response.status}`);
-  }
+  await throwIfNotOk(response, `Failed to fetch events for session ${sessionId}`);
 
   return response.text();
 }
@@ -408,9 +377,7 @@ export async function renewSession(sessionId: string): Promise<Session> {
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to renew session ${sessionId}: ${response.status}`);
-  }
+  await throwIfNotOk(response, `Failed to renew session ${sessionId}`);
 
   // Transform SKAHA response to normalized Session format
   const skahaResponse: SkahaSessionResponse = await response.json();

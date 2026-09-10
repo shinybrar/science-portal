@@ -24,6 +24,7 @@ import {
 } from '@/lib/api/skaha';
 import { useAppStore } from '@/lib/stores';
 import { isLaunchPendingPlaceholder } from '@/lib/sessions/sessionQuota';
+import { retryUnlessAuthFailure } from '@/lib/query/query-result';
 
 /**
  * Query keys for sessions
@@ -59,14 +60,7 @@ export function useSessions(
     select: (sessions) => sessions.filter((s) => !isLaunchPendingPlaceholder(s)),
     // Only fetch if authenticated (default to true for backward compatibility)
     enabled: isAuthenticated !== false,
-    // Avoid long “loading” from default retries when the token is rejected (stale/expired Bearer)
-    retry(failureCount, error) {
-      const msg = error instanceof Error ? error.message : String(error);
-      if (/\b401\b/.test(msg)) {
-        return false;
-      }
-      return failureCount < 3;
-    },
+    retry: retryUnlessAuthFailure,
     // Refetch only while an *interactive* session is in a transitional state
     // (Pending). Headless batch jobs can sit Pending for hours and would
     // otherwise keep the loop alive forever. NOTE: don't use `connectUrl` as

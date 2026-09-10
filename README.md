@@ -90,7 +90,7 @@ All workflows assume you are logged in with a CADC account.
 - **Language:** TypeScript 5
 - **UI:** Material-UI 7, Tailwind CSS 4
 - **State Management:** Zustand (client UI), TanStack React Query (server data), nuqs (URL state) — see [docs/state-management.md](docs/state-management.md) and [ADR 0001](docs/adr/0001-client-state-management.md)
-- **Authentication:** NextAuth 5 (CANFAR/OIDC modes)
+- **Authentication:** NextAuth 5 (CANFAR/OIDC modes) — see [docs/auth-session-authorization.md](docs/auth-session-authorization.md) for the login vs 401/403 model
 - **Runtime:** Node.js 22+
 
 ## Building
@@ -172,8 +172,9 @@ src/
 │   ├── stores/           # Zustand client UI store
 │   └── utils/            # Utility functions
 docs/
-├── adr/                  # Architecture decision records
-└── state-management.md   # State classification guide
+├── adr/                           # Architecture decision records
+├── state-management.md            # State classification guide
+└── auth-session-authorization.md  # Login vs API 401/403 (source of truth)
 ```
 
 ## Deployment

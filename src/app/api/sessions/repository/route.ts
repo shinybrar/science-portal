@@ -58,7 +58,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
       `Failed to fetch image repositories: ${response.statusText}`,
       errorText,
     );
-    return errorResponse('Failed to fetch image repositories', response.status);
+    return errorResponse('Failed to fetch image repositories', response.status, errorText);
   }
 
   const rawResponse = await response.json();

@@ -22,6 +22,7 @@ import {
   type UserStorageSummary,
   type StorageNode,
 } from '@/lib/api/storage';
+import { retryUnlessAuthFailure } from '@/lib/query/query-result';
 
 /**
  * Query keys for storage
@@ -57,6 +58,7 @@ export function useUserStorageQuota(
     queryFn: () => getUserStorageQuota(username),
     // Only enable if username is provided and user is authenticated
     enabled: !!username && isAuthenticated !== false,
+    retry: retryUnlessAuthFailure,
     // Refresh storage quota every 5 minutes
     staleTime: 5 * 60 * 1000,
     ...options,
@@ -80,6 +82,7 @@ export function useUserStorageSummary(
     queryKey: storageKeys.summary(username),
     queryFn: () => getUserStorageSummary(username),
     enabled: !!username && username !== 'Login' && isAuthenticated !== false,
+    retry: retryUnlessAuthFailure,
     staleTime: 5 * 60 * 1000,
     ...options,
   });

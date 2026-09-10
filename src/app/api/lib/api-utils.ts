@@ -6,6 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { clipUntrustedDetails } from '@/lib/api/http-error';
 import { HTTP_STATUS, HTTP_STATUS_NAMES, API_TIMEOUTS } from './http-constants';
 
 /**
@@ -31,7 +32,7 @@ export function errorResponse(
       error: getErrorName(status),
       message,
       status,
-      details,
+      details: clipUntrustedDetails(details),
     },
     { status },
   );
